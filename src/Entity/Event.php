@@ -21,6 +21,9 @@ class Event
     #[ORM\Column]
     private ?\DateTime $date = null;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
@@ -69,6 +72,17 @@ class Event
     {
         $this->date = $date;
 
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 
