@@ -21,6 +21,12 @@ class Game
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $slug = null;
+
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $color = null;
+
     /**
      * @var Collection<int, Event>
      */
@@ -57,6 +63,40 @@ class Game
     public function setImage(string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+        return $this;
+    }
+    /**
+     * Get the value of color
+     *
+     * @return ?string
+     */
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    /**
+     * Set the value of color
+     *
+     * @param ?string $color
+     *
+     * @return self
+     */
+    public function setColor(?string $color): self
+    {
+        $this->color = $color;
 
         return $this;
     }

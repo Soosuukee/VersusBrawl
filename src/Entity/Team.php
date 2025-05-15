@@ -34,9 +34,23 @@ class Team
     #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'team')]
     private Collection $eventParticipations;
 
+    /**
+     * @var Collection<int, Phase>
+     */
+    #[ORM\ManyToMany(targetEntity: Phase::class, mappedBy: 'teams')]
+    private Collection $phases;
+
+    /**
+     * @var Collection<int, MatchParticipant>
+     */
+    #[ORM\OneToMany(targetEntity: MatchParticipant::class, mappedBy: 'team')]
+    private Collection $matchParticipants;
+
     public function __construct()
     {
         $this->eventParticipations = new ArrayCollection();
+        $this->phases = new ArrayCollection();
+        $this->matchParticipants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -116,6 +130,63 @@ class Team
             // set the owning side to null (unless already changed)
             if ($eventParticipation->getTeam() === $this) {
                 $eventParticipation->setTeam(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Phase>
+     */
+    public function getPhases(): Collection
+    {
+        return $this->phases;
+    }
+
+    public function addPhase(Phase $phase): static
+    {
+        if (!$this->phases->contains($phase)) {
+            $this->phases->add($phase);
+            $phase->addTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhase(Phase $phase): static
+    {
+        if ($this->phases->removeElement($phase)) {
+            $phase->removeTeam($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MatchParticipant>
+     */
+    public function getMatchParticipants(): Collection
+    {
+        return $this->matchParticipants;
+    }
+
+    public function addMatchParticipant(MatchParticipant $matchParticipant): static
+    {
+        if (!$this->matchParticipants->contains($matchParticipant)) {
+            $this->matchParticipants->add($matchParticipant);
+            $matchParticipant->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatchParticipant(MatchParticipant $matchParticipant): static
+    {
+        if ($this->matchParticipants->removeElement($matchParticipant)) {
+            // set the owning side to null (unless already changed)
+            if ($matchParticipant->getTeam() === $this) {
+                $matchParticipant->setTeam(null);
             }
         }
 

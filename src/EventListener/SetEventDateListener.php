@@ -13,7 +13,7 @@ class SetEventDateListener
     {
         $entity = $event->getObject();
 
-        if (!$entity instanceof \App\Entity\Event) {
+        if (!$entity instanceof Event) {
             return;
         }
 
