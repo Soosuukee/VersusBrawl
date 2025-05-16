@@ -2,20 +2,20 @@
 
 namespace App\Entity;
 
-use App\Repository\GameMatchRepository;
+use App\Repository\MatchgameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: GameMatchRepository::class)]
-class GameMatch
+#[ORM\Entity(repositoryClass: MatchgameRepository::class)]
+class MatchGame
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'gameMatches')]
+    #[ORM\ManyToOne(inversedBy: 'Matchgames')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Phase $phase = null;
 
@@ -35,14 +35,14 @@ class GameMatch
     private ?string $lobbycode = null;
 
     /**
-     * @var Collection<int, MatchParticipant>
+     * @var Collection<int, MatchgameParticipant>
      */
-    #[ORM\OneToMany(targetEntity: MatchParticipant::class, mappedBy: 'gameMatch', orphanRemoval: true)]
-    private Collection $matchParticipants;
+    #[ORM\OneToMany(targetEntity: MatchgameParticipant::class, mappedBy: 'Matchgame', orphanRemoval: true)]
+    private Collection $MatchgameParticipants;
 
     public function __construct()
     {
-        $this->matchParticipants = new ArrayCollection();
+        $this->MatchgameParticipants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,29 +123,29 @@ class GameMatch
     }
 
     /**
-     * @return Collection<int, MatchParticipant>
+     * @return Collection<int, MatchgameParticipant>
      */
-    public function getMatchParticipants(): Collection
+    public function getMatchgameParticipants(): Collection
     {
-        return $this->matchParticipants;
+        return $this->MatchgameParticipants;
     }
 
-    public function addMatchParticipant(MatchParticipant $matchParticipant): static
+    public function addMatchgameParticipant(MatchgameParticipant $MatchgameParticipant): static
     {
-        if (!$this->matchParticipants->contains($matchParticipant)) {
-            $this->matchParticipants->add($matchParticipant);
-            $matchParticipant->setGameMatch($this);
+        if (!$this->MatchgameParticipants->contains($MatchgameParticipant)) {
+            $this->MatchgameParticipants->add($MatchgameParticipant);
+            $MatchgameParticipant->setMatchgame($this);
         }
 
         return $this;
     }
 
-    public function removeMatchParticipant(MatchParticipant $matchParticipant): static
+    public function removeMatchgameParticipant(MatchgameParticipant $MatchgameParticipant): static
     {
-        if ($this->matchParticipants->removeElement($matchParticipant)) {
+        if ($this->MatchgameParticipants->removeElement($MatchgameParticipant)) {
             // set the owning side to null (unless already changed)
-            if ($matchParticipant->getGameMatch() === $this) {
-                $matchParticipant->setGameMatch(null);
+            if ($MatchgameParticipant->getMatchgame() === $this) {
+                $MatchgameParticipant->setMatchgame(null);
             }
         }
 

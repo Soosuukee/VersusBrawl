@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\MatchParticipantRepository;
+use App\Repository\MatchgameParticipantRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MatchParticipantRepository::class)]
-class MatchParticipant
+#[ORM\Entity(repositoryClass: MatchgameParticipantRepository::class)]
+class MatchgameParticipant
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,14 +22,14 @@ class MatchParticipant
     #[ORM\Column(nullable: true)]
     private ?bool $isWinner = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matchParticipants')]
+    #[ORM\ManyToOne(inversedBy: 'MatchgameParticipants')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?GameMatch $gameMatch = null;
+    private ?Matchgame $Matchgame = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matchParticipants')]
+    #[ORM\ManyToOne(inversedBy: 'MatchgameParticipants')]
     private ?Team $team = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matchParticipants')]
+    #[ORM\ManyToOne(inversedBy: 'MatchgameParticipants')]
     private ?User $player = null;
 
     public function getId(): ?int
@@ -73,14 +73,14 @@ class MatchParticipant
         return $this;
     }
 
-    public function getGameMatch(): ?GameMatch
+    public function getMatchgame(): ?Matchgame
     {
-        return $this->gameMatch;
+        return $this->Matchgame;
     }
 
-    public function setGameMatch(?GameMatch $gameMatch): static
+    public function setMatchgame(?Matchgame $Matchgame): static
     {
-        $this->gameMatch = $gameMatch;
+        $this->Matchgame = $Matchgame;
 
         return $this;
     }

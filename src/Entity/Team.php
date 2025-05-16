@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\MatchgameParticipant;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -41,16 +42,16 @@ class Team
     private Collection $phases;
 
     /**
-     * @var Collection<int, MatchParticipant>
+     * @var Collection<int, MatchgameParticipant>
      */
-    #[ORM\OneToMany(targetEntity: MatchParticipant::class, mappedBy: 'team')]
-    private Collection $matchParticipants;
+    #[ORM\OneToMany(targetEntity: MatchgameParticipant::class, mappedBy: 'team')]
+    private Collection $matchgameparticipants;
 
     public function __construct()
     {
         $this->eventParticipations = new ArrayCollection();
         $this->phases = new ArrayCollection();
-        $this->matchParticipants = new ArrayCollection();
+        $this->matchgameparticipants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -164,26 +165,26 @@ class Team
     }
 
     /**
-     * @return Collection<int, MatchParticipant>
+     * @return Collection<int, MatchgameParticipant>
      */
-    public function getMatchParticipants(): Collection
+    public function getmatchgameparticipants(): Collection
     {
-        return $this->matchParticipants;
+        return $this->matchgameparticipants;
     }
 
-    public function addMatchParticipant(MatchParticipant $matchParticipant): static
+    public function addMatchParticipant(MatchgameParticipant $matchParticipant): static
     {
-        if (!$this->matchParticipants->contains($matchParticipant)) {
-            $this->matchParticipants->add($matchParticipant);
+        if (!$this->matchgameparticipants->contains($matchParticipant)) {
+            $this->matchgameparticipants->add($matchParticipant);
             $matchParticipant->setTeam($this);
         }
 
         return $this;
     }
 
-    public function removeMatchParticipant(MatchParticipant $matchParticipant): static
+    public function removeMatchParticipant(MatchgameParticipant $matchParticipant): static
     {
-        if ($this->matchParticipants->removeElement($matchParticipant)) {
+        if ($this->matchgameparticipants->removeElement($matchParticipant)) {
             // set the owning side to null (unless already changed)
             if ($matchParticipant->getTeam() === $this) {
                 $matchParticipant->setTeam(null);

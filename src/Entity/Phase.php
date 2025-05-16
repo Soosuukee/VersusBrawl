@@ -6,6 +6,7 @@ use App\Repository\PhaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Matchgame;
 
 #[ORM\Entity(repositoryClass: PhaseRepository::class)]
 class Phase
@@ -44,15 +45,15 @@ class Phase
     private ?string $roundLabelingMode = null;
 
     /**
-     * @var Collection<int, GameMatch>
+     * @var Collection<int, Matchgame>
      */
-    #[ORM\OneToMany(targetEntity: GameMatch::class, mappedBy: 'phase', orphanRemoval: true)]
-    private Collection $gameMatches;
+    #[ORM\OneToMany(targetEntity: Matchgame::class, mappedBy: 'phase', orphanRemoval: true)]
+    private Collection $matchgames;
 
     public function __construct()
     {
         $this->teams = new ArrayCollection();
-        $this->gameMatches = new ArrayCollection();
+        $this->matchgames = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -169,29 +170,29 @@ class Phase
     }
 
     /**
-     * @return Collection<int, GameMatch>
+     * @return Collection<int, Matchgame>
      */
-    public function getGameMatches(): Collection
+    public function getMatchgames(): Collection
     {
-        return $this->gameMatches;
+        return $this->matchgames;
     }
 
-    public function addGameMatch(GameMatch $gameMatch): static
+    public function addMatchgame(Matchgame $Matchgame): static
     {
-        if (!$this->gameMatches->contains($gameMatch)) {
-            $this->gameMatches->add($gameMatch);
-            $gameMatch->setPhase($this);
+        if (!$this->matchgames->contains($Matchgame)) {
+            $this->matchgames->add($Matchgame);
+            $Matchgame->setPhase($this);
         }
 
         return $this;
     }
 
-    public function removeGameMatch(GameMatch $gameMatch): static
+    public function removeMatchgame(Matchgame $Matchgame): static
     {
-        if ($this->gameMatches->removeElement($gameMatch)) {
+        if ($this->matchgames->removeElement($Matchgame)) {
             // set the owning side to null (unless already changed)
-            if ($gameMatch->getPhase() === $this) {
-                $gameMatch->setPhase(null);
+            if ($Matchgame->getPhase() === $this) {
+                $Matchgame->setPhase(null);
             }
         }
 
