@@ -48,10 +48,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Team::class, mappedBy: 'captain')]
     private Collection $teams;
 
+    /**
+     * @var Collection<int, matchgameparticipant>
+     */
+    #[ORM\OneToMany(targetEntity: matchgameparticipant::class, mappedBy: 'player')]
+    private Collection $matchgameparticipants;
+
     public function __construct()
     {
         $this->createdEvents = new ArrayCollection();
         $this->teams = new ArrayCollection();
+        $this->matchgameparticipants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,6 +205,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($team->getCaptain() === $this) {
                 $team->setCaptain(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Matchgameparticipant>
+     */
+    public function getmatchgameparticipants(): Collection
+    {
+        return $this->matchgameparticipants;
+    }
+
+    public function addmatchgameparticipant(Matchgameparticipant $matchgameparticipant): static
+    {
+        if (!$this->matchgameparticipants->contains($matchgameparticipant)) {
+            $this->matchgameparticipants->add($matchgameparticipant);
+            $matchgameparticipant->setPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatchParticipant(MatchgameParticipant $matchgameparticipant): static
+    {
+        if ($this->matchgameparticipants->removeElement($matchgameparticipant)) {
+            // set the owning side to null (unless already changed)
+            if ($matchgameparticipant->getPlayer() === $this) {
+                $matchgameparticipant->setPlayer(null);
             }
         }
 

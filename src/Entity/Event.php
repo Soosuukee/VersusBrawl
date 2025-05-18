@@ -21,8 +21,20 @@ class Event
     #[ORM\Column]
     private ?\DateTime $date = null;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
     #[ORM\Column(length: 255)]
     private ?string $image = null;
+
+    #[ORM\Column(type: 'integer')]
+    private int $requiredPlayers;
+
+    #[ORM\Column(type: 'text', nullable: false)]
+    private ?string $description = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isRankedByPoints = false;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
@@ -38,9 +50,16 @@ class Event
     #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'event')]
     private Collection $participants;
 
+    /**
+     * @var Collection<int, Phase>
+     */
+    #[ORM\OneToMany(targetEntity: Phase::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $phases;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
+        $this->phases = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -72,6 +91,17 @@ class Event
         return $this;
     }
 
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
     public function getImage(): ?string
     {
         return $this->image;
@@ -81,6 +111,44 @@ class Event
     {
         $this->image = $image;
 
+        return $this;
+    }
+
+    public function getRequiredPlayers(int $requiredPlayers): ?int
+    {
+        return $this->requiredPlayers;
+    }
+
+    public function setRequiredPlayers(int $requiredPlayers): static
+
+    {
+        $this->requiredPlayers = $requiredPlayers;
+
+        return $this;
+    }
+
+    public function getDescription(string $description): ?string
+
+    {
+        return $this->description;
+    }
+
+    public function setDescription(int $Description): static
+
+    {
+        $this->requiredPlayers = $Description;
+
+        return $this;
+    }
+
+    public function isRankedByPoints(): bool
+    {
+        return $this->isRankedByPoints;
+    }
+
+    public function setIsRankedByPoints(bool $isRankedByPoints): static
+    {
+        $this->isRankedByPoints = $isRankedByPoints;
         return $this;
     }
 
@@ -132,6 +200,36 @@ class Event
             // set the owning side to null (unless already changed)
             if ($participant->getEvent() === $this) {
                 $participant->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Phase>
+     */
+    public function getPhases(): Collection
+    {
+        return $this->phases;
+    }
+
+    public function addPhase(Phase $phase): static
+    {
+        if (!$this->phases->contains($phase)) {
+            $this->phases->add($phase);
+            $phase->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhase(Phase $phase): static
+    {
+        if ($this->phases->removeElement($phase)) {
+            // set the owning side to null (unless already changed)
+            if ($phase->getEvent() === $this) {
+                $phase->setEvent(null);
             }
         }
 
