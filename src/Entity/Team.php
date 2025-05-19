@@ -26,8 +26,8 @@ class Team
     #[ORM\JoinColumn(nullable: false)]
     private ?User $captain = null;
 
-    #[ORM\Column]
-    private array $players = [];
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $players = null;
 
     /**
      * @var Collection<int, EventTeam>
@@ -167,12 +167,12 @@ class Team
     /**
      * @return Collection<int, MatchgameParticipant>
      */
-    public function getmatchgameparticipants(): Collection
+    public function getMatchgameParticipants(): Collection
     {
         return $this->matchgameparticipants;
     }
 
-    public function addMatchParticipant(MatchgameParticipant $matchParticipant): static
+    public function addMatchgameParticipant(MatchgameParticipant $matchParticipant): static
     {
         if (!$this->matchgameparticipants->contains($matchParticipant)) {
             $this->matchgameparticipants->add($matchParticipant);
@@ -182,7 +182,7 @@ class Team
         return $this;
     }
 
-    public function removeMatchParticipant(MatchgameParticipant $matchParticipant): static
+    public function removeMatchgameParticipant(MatchgameParticipant $matchParticipant): static
     {
         if ($this->matchgameparticipants->removeElement($matchParticipant)) {
             // set the owning side to null (unless already changed)

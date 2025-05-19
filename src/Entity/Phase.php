@@ -50,10 +50,20 @@ class Phase
     #[ORM\OneToMany(targetEntity: Matchgame::class, mappedBy: 'phase', orphanRemoval: true)]
     private Collection $matchgames;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $phaseOrder = null;
+
+    /**
+     * @var Collection<int, ScoringRule>
+     */
+    #[ORM\OneToMany(targetEntity: ScoringRule::class, mappedBy: 'phase')]
+    private Collection $scoringRules;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
         $this->matchgames = new ArrayCollection();
+        $this->scoringRules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -193,6 +203,48 @@ class Phase
             // set the owning side to null (unless already changed)
             if ($Matchgame->getPhase() === $this) {
                 $Matchgame->setPhase(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPhaseOrder(): ?int
+    {
+        return $this->phaseOrder;
+    }
+
+    public function setPhaseOrder(?int $phaseOrder): static
+    {
+        $this->phaseOrder = $phaseOrder;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ScoringRule>
+     */
+    public function getScoringRules(): Collection
+    {
+        return $this->scoringRules;
+    }
+
+    public function addScoringRule(ScoringRule $scoringRule): static
+    {
+        if (!$this->scoringRules->contains($scoringRule)) {
+            $this->scoringRules->add($scoringRule);
+            $scoringRule->setPhase($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScoringRule(ScoringRule $scoringRule): static
+    {
+        if ($this->scoringRules->removeElement($scoringRule)) {
+            // set the owning side to null (unless already changed)
+            if ($scoringRule->getPhase() === $this) {
+                $scoringRule->setPhase(null);
             }
         }
 

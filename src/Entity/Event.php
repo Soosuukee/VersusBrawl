@@ -30,11 +30,14 @@ class Event
     #[ORM\Column(type: 'integer')]
     private int $requiredPlayers;
 
-    #[ORM\Column(type: 'text', nullable: false)]
+    #[ORM\Column(type: 'text')]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'boolean')]
-    private bool $isRankedByPoints = false;
+    #[ORM\Column(length: 50)]
+    private string $scoringMode = 'standard';
+
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: ScoringRule::class, cascade: ['persist', 'remove'])]
+    private Collection $scoringRules;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
@@ -44,15 +47,9 @@ class Event
     #[ORM\JoinColumn(nullable: false)]
     private ?User $CreatedBy = null;
 
-    /**
-     * @var Collection<int, EventTeam>
-     */
     #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'event')]
     private Collection $participants;
 
-    /**
-     * @var Collection<int, Phase>
-     */
     #[ORM\OneToMany(targetEntity: Phase::class, mappedBy: 'event', orphanRemoval: true)]
     private Collection $phases;
 
@@ -60,6 +57,7 @@ class Event
     {
         $this->participants = new ArrayCollection();
         $this->phases = new ArrayCollection();
+        $this->scoringRules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -71,11 +69,9 @@ class Event
     {
         return $this->name;
     }
-
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -83,11 +79,9 @@ class Event
     {
         return $this->date;
     }
-
     public function setDate(\DateTime $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -95,7 +89,6 @@ class Event
     {
         return $this->createdAt;
     }
-
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
@@ -106,49 +99,57 @@ class Event
     {
         return $this->image;
     }
-
     public function setImage(string $image): static
     {
         $this->image = $image;
-
         return $this;
     }
 
-    public function getRequiredPlayers(int $requiredPlayers): ?int
+    public function getRequiredPlayers(): ?int
     {
         return $this->requiredPlayers;
     }
-
     public function setRequiredPlayers(int $requiredPlayers): static
-
     {
         $this->requiredPlayers = $requiredPlayers;
-
         return $this;
     }
 
-    public function getDescription(string $description): ?string
-
+    public function getDescription(): ?string
     {
         return $this->description;
     }
-
-    public function setDescription(int $Description): static
-
+    public function setDescription(string $description): static
     {
-        $this->requiredPlayers = $Description;
-
+        $this->description = $description;
         return $this;
     }
 
-    public function isRankedByPoints(): bool
+    public function getScoringMode(): string
     {
-        return $this->isRankedByPoints;
+        return $this->scoringMode;
+    }
+    public function setScoringMode(string $scoringMode): static
+    {
+        $this->scoringMode = $scoringMode;
+        return $this;
     }
 
-    public function setIsRankedByPoints(bool $isRankedByPoints): static
+    public function getScoringRules(): Collection
     {
-        $this->isRankedByPoints = $isRankedByPoints;
+        return $this->scoringRules;
+    }
+    public function addScoringRule(ScoringRule $rule): static
+    {
+        if (!$this->scoringRules->contains($rule)) {
+            $this->scoringRules->add($rule);
+            $rule->setEvent($this);
+        }
+        return $this;
+    }
+    public function removeScoringRule(ScoringRule $rule): static
+    {
+        $this->scoringRules->removeElement($rule);
         return $this;
     }
 
@@ -156,11 +157,9 @@ class Event
     {
         return $this->game;
     }
-
     public function setGame(?Game $game): static
     {
         $this->game = $game;
-
         return $this;
     }
 
@@ -168,71 +167,53 @@ class Event
     {
         return $this->CreatedBy;
     }
-
     public function setCreatedBy(?User $CreatedBy): static
     {
         $this->CreatedBy = $CreatedBy;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, EventTeam>
-     */
     public function getParticipants(): Collection
     {
         return $this->participants;
     }
-
     public function addParticipant(EventTeam $participant): static
     {
         if (!$this->participants->contains($participant)) {
             $this->participants->add($participant);
             $participant->setEvent($this);
         }
-
         return $this;
     }
-
     public function removeParticipant(EventTeam $participant): static
     {
         if ($this->participants->removeElement($participant)) {
-            // set the owning side to null (unless already changed)
             if ($participant->getEvent() === $this) {
                 $participant->setEvent(null);
             }
         }
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Phase>
-     */
     public function getPhases(): Collection
     {
         return $this->phases;
     }
-
     public function addPhase(Phase $phase): static
     {
         if (!$this->phases->contains($phase)) {
             $this->phases->add($phase);
             $phase->setEvent($this);
         }
-
         return $this;
     }
-
     public function removePhase(Phase $phase): static
     {
         if ($this->phases->removeElement($phase)) {
-            // set the owning side to null (unless already changed)
             if ($phase->getEvent() === $this) {
                 $phase->setEvent(null);
             }
         }
-
         return $this;
     }
 }

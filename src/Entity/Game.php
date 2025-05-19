@@ -18,9 +18,6 @@ class Game
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $image = null;
-
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
 
@@ -32,6 +29,18 @@ class Game
      */
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'game')]
     private Collection $events;
+
+    #[ORM\Column(length: 50)]
+    private ?string $type = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $icon = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $banner = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $heroes = null;
 
     public function __construct()
     {
@@ -51,18 +60,6 @@ class Game
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(string $image): static
-    {
-        $this->image = $image;
 
         return $this;
     }
@@ -127,6 +124,54 @@ class Game
                 $event->setGame(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(string $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getBanner(): ?string
+    {
+        return $this->banner;
+    }
+
+    public function setBanner(string $banner): static
+    {
+        $this->banner = $banner;
+
+        return $this;
+    }
+
+    public function getHeroes(): ?string
+    {
+        return $this->heroes;
+    }
+
+    public function setHeroes(string $heroes): static
+    {
+        $this->heroes = $heroes;
 
         return $this;
     }

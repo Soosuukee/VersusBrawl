@@ -54,11 +54,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: matchgameparticipant::class, mappedBy: 'player')]
     private Collection $matchgameparticipants;
 
+    /**
+     * @var Collection<int, PlayerStats>
+     */
+    #[ORM\OneToMany(targetEntity: PlayerStats::class, mappedBy: 'player')]
+    private Collection $playerStats;
+
     public function __construct()
     {
         $this->createdEvents = new ArrayCollection();
         $this->teams = new ArrayCollection();
         $this->matchgameparticipants = new ArrayCollection();
+        $this->playerStats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -235,6 +242,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($matchgameparticipant->getPlayer() === $this) {
                 $matchgameparticipant->setPlayer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PlayerStats>
+     */
+    public function getPlayerStats(): Collection
+    {
+        return $this->playerStats;
+    }
+
+    public function addPlayerStat(PlayerStats $playerStat): static
+    {
+        if (!$this->playerStats->contains($playerStat)) {
+            $this->playerStats->add($playerStat);
+            $playerStat->setPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlayerStat(PlayerStats $playerStat): static
+    {
+        if ($this->playerStats->removeElement($playerStat)) {
+            // set the owning side to null (unless already changed)
+            if ($playerStat->getPlayer() === $this) {
+                $playerStat->setPlayer(null);
             }
         }
 
