@@ -45,6 +45,9 @@ class Game
     #[ORM\Column(type: 'boolean')]
     private bool $isAvailable = false;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $availableModes = null;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -187,6 +190,17 @@ class Game
     public function setIsAvailable(bool $isAvailable): self
     {
         $this->isAvailable = $isAvailable;
+        return $this;
+    }
+
+    public function getAvailableModes(): ?array
+    {
+        return $this->availableModes;
+    }
+
+    public function setAvailableModes(?array $availableModes): static
+    {
+        $this->availableModes = $availableModes;
         return $this;
     }
 }

@@ -33,6 +33,9 @@ class Event
     #[ORM\Column(type: 'text')]
     private ?string $description = null;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $mode = null;
+
     #[ORM\Column(length: 50)]
     private string $scoringMode = 'standard';
 
@@ -122,6 +125,18 @@ class Event
     public function setDescription(string $description): static
     {
         $this->description = $description;
+        return $this;
+    }
+
+
+    public function getMode(): ?string
+    {
+        return $this->mode;
+    }
+
+    public function setMode(?string $mode): static
+    {
+        $this->mode = $mode;
         return $this;
     }
 
