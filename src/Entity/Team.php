@@ -22,36 +22,27 @@ class Team
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
-    #[ORM\ManyToOne(inversedBy: 'teams')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $captain = null;
-
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $players = null;
 
-    /**
-     * @var Collection<int, EventTeam>
-     */
     #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'team')]
     private Collection $eventParticipations;
 
-    /**
-     * @var Collection<int, Phase>
-     */
     #[ORM\ManyToMany(targetEntity: Phase::class, mappedBy: 'teams')]
     private Collection $phases;
 
-    /**
-     * @var Collection<int, MatchgameParticipant>
-     */
     #[ORM\OneToMany(targetEntity: MatchgameParticipant::class, mappedBy: 'team')]
     private Collection $matchgameparticipants;
+
+    #[ORM\OneToMany(mappedBy: 'team', targetEntity: TeamMember::class, cascade: ['persist', 'remove'])]
+    private Collection $teamMembers;
 
     public function __construct()
     {
         $this->eventParticipations = new ArrayCollection();
         $this->phases = new ArrayCollection();
         $this->matchgameparticipants = new ArrayCollection();
+        $this->teamMembers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,7 +58,6 @@ class Team
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -79,19 +69,6 @@ class Team
     public function setImage(string $image): static
     {
         $this->image = $image;
-
-        return $this;
-    }
-
-    public function getCaptain(): ?User
-    {
-        return $this->captain;
-    }
-
-    public function setCaptain(?User $captain): static
-    {
-        $this->captain = $captain;
-
         return $this;
     }
 
@@ -103,13 +80,9 @@ class Team
     public function setPlayers(array $players): static
     {
         $this->players = $players;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, EventTeam>
-     */
     public function getEventParticipations(): Collection
     {
         return $this->eventParticipations;
@@ -121,25 +94,19 @@ class Team
             $this->eventParticipations->add($eventParticipation);
             $eventParticipation->setTeam($this);
         }
-
         return $this;
     }
 
     public function removeEventParticipation(EventTeam $eventParticipation): static
     {
         if ($this->eventParticipations->removeElement($eventParticipation)) {
-            // set the owning side to null (unless already changed)
             if ($eventParticipation->getTeam() === $this) {
                 $eventParticipation->setTeam(null);
             }
         }
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Phase>
-     */
     public function getPhases(): Collection
     {
         return $this->phases;
@@ -151,7 +118,6 @@ class Team
             $this->phases->add($phase);
             $phase->addTeam($this);
         }
-
         return $this;
     }
 
@@ -160,13 +126,9 @@ class Team
         if ($this->phases->removeElement($phase)) {
             $phase->removeTeam($this);
         }
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, MatchgameParticipant>
-     */
     public function getMatchgameParticipants(): Collection
     {
         return $this->matchgameparticipants;
@@ -178,19 +140,50 @@ class Team
             $this->matchgameparticipants->add($matchParticipant);
             $matchParticipant->setTeam($this);
         }
-
         return $this;
     }
 
     public function removeMatchgameParticipant(MatchgameParticipant $matchParticipant): static
     {
         if ($this->matchgameparticipants->removeElement($matchParticipant)) {
-            // set the owning side to null (unless already changed)
             if ($matchParticipant->getTeam() === $this) {
                 $matchParticipant->setTeam(null);
             }
         }
-
         return $this;
+    }
+
+    public function getTeamMembers(): Collection
+    {
+        return $this->teamMembers;
+    }
+
+    public function addTeamMember(TeamMember $teamMember): static
+    {
+        if (!$this->teamMembers->contains($teamMember)) {
+            $this->teamMembers->add($teamMember);
+            $teamMember->setTeam($this);
+        }
+        return $this;
+    }
+
+    public function removeTeamMember(TeamMember $teamMember): static
+    {
+        if ($this->teamMembers->removeElement($teamMember)) {
+            if ($teamMember->getTeam() === $this) {
+                $teamMember->setTeam(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getCaptain(): ?User
+    {
+        foreach ($this->teamMembers as $member) {
+            if ($member->isCaptain()) {
+                return $member->getPlayer();
+            }
+        }
+        return null;
     }
 }

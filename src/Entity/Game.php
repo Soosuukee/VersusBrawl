@@ -42,6 +42,9 @@ class Game
     #[ORM\Column(length: 255)]
     private ?string $heroes = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isAvailable = false;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -173,6 +176,17 @@ class Game
     {
         $this->heroes = $heroes;
 
+        return $this;
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->isAvailable;
+    }
+
+    public function setIsAvailable(bool $isAvailable): self
+    {
+        $this->isAvailable = $isAvailable;
         return $this;
     }
 }
