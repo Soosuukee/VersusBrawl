@@ -33,8 +33,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'CreatedBy')]
     private Collection $createdEvents;
 
-    #[ORM\OneToMany(targetEntity: MatchgameParticipant::class, mappedBy: 'player')]
-    private Collection $matchgameparticipants;
+    #[ORM\OneToMany(targetEntity: MatchGameParticipant::class, mappedBy: 'player')]
+    private Collection $matchGameParticipants;
 
     #[ORM\OneToMany(targetEntity: PlayerStats::class, mappedBy: 'player')]
     private Collection $playerStats;
@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->createdEvents = new ArrayCollection();
-        $this->matchgameparticipants = new ArrayCollection();
+        $this->matchGameParticipants = new ArrayCollection();
         $this->playerStats = new ArrayCollection();
         $this->teamMembers = new ArrayCollection();
     }
@@ -137,25 +137,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getMatchgameParticipants(): Collection
+    public function getMatchGameParticipants(): Collection
     {
-        return $this->matchgameparticipants;
+        return $this->matchGameParticipants;
     }
 
-    public function addMatchgameParticipant(MatchgameParticipant $matchgameparticipant): static
+    public function addMatchGameParticipant(MatchGameParticipant $matchGameParticipant): static
     {
-        if (!$this->matchgameparticipants->contains($matchgameparticipant)) {
-            $this->matchgameparticipants->add($matchgameparticipant);
-            $matchgameparticipant->setPlayer($this);
+        if (!$this->matchGameParticipants->contains($matchGameParticipant)) {
+            $this->matchGameParticipants->add($matchGameParticipant);
+            $matchGameParticipant->setPlayer($this);
         }
         return $this;
     }
 
-    public function removeMatchgameParticipant(MatchgameParticipant $matchgameparticipant): static
+    public function removeMatchGameParticipant(MatchGameParticipant $matchGameParticipant): static
     {
-        if ($this->matchgameparticipants->removeElement($matchgameparticipant)) {
-            if ($matchgameparticipant->getPlayer() === $this) {
-                $matchgameparticipant->setPlayer(null);
+        if ($this->matchGameParticipants->removeElement($matchGameParticipant)) {
+            if ($matchGameParticipant->getPlayer() === $this) {
+                $matchGameParticipant->setPlayer(null);
             }
         }
         return $this;

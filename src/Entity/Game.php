@@ -48,6 +48,9 @@ class Game
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $availableModes = null;
 
+    #[ORM\Column(type: 'json')]
+    private array $platforms = [];
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -201,6 +204,18 @@ class Game
     public function setAvailableModes(?array $availableModes): static
     {
         $this->availableModes = $availableModes;
+        return $this;
+    }
+
+    public function getPlatforms(): array
+    {
+        return $this->platforms;
+    }
+
+    public function setPlatforms(array $platforms): static
+    {
+        $this->platforms = $platforms;
+
         return $this;
     }
 }

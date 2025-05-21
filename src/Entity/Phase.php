@@ -6,7 +6,7 @@ use App\Repository\PhaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Matchgame;
+use App\Entity\MatchGame;
 
 #[ORM\Entity(repositoryClass: PhaseRepository::class)]
 class Phase
@@ -45,10 +45,10 @@ class Phase
     private ?string $roundLabelingMode = null;
 
     /**
-     * @var Collection<int, Matchgame>
+     * @var Collection<int, MatchGame>
      */
-    #[ORM\OneToMany(targetEntity: Matchgame::class, mappedBy: 'phase', orphanRemoval: true)]
-    private Collection $matchgames;
+    #[ORM\OneToMany(targetEntity: MatchGame::class, mappedBy: 'phase', orphanRemoval: true)]
+    private Collection $matchGames;
 
     #[ORM\Column(nullable: true)]
     private ?int $phaseOrder = null;
@@ -62,7 +62,7 @@ class Phase
     public function __construct()
     {
         $this->teams = new ArrayCollection();
-        $this->matchgames = new ArrayCollection();
+        $this->matchGames = new ArrayCollection();
         $this->scoringRules = new ArrayCollection();
     }
 
@@ -180,29 +180,29 @@ class Phase
     }
 
     /**
-     * @return Collection<int, Matchgame>
+     * @return Collection<int, MatchGame>
      */
-    public function getMatchgames(): Collection
+    public function getMatchGames(): Collection
     {
-        return $this->matchgames;
+        return $this->matchGames;
     }
 
-    public function addMatchgame(Matchgame $Matchgame): static
+    public function addMatchGame(MatchGame $MatchGame): static
     {
-        if (!$this->matchgames->contains($Matchgame)) {
-            $this->matchgames->add($Matchgame);
-            $Matchgame->setPhase($this);
+        if (!$this->matchGames->contains($MatchGame)) {
+            $this->matchGames->add($MatchGame);
+            $MatchGame->setPhase($this);
         }
 
         return $this;
     }
 
-    public function removeMatchgame(Matchgame $Matchgame): static
+    public function removeMatchGame(MatchGame $MatchGame): static
     {
-        if ($this->matchgames->removeElement($Matchgame)) {
+        if ($this->matchGames->removeElement($MatchGame)) {
             // set the owning side to null (unless already changed)
-            if ($Matchgame->getPhase() === $this) {
-                $Matchgame->setPhase(null);
+            if ($MatchGame->getPhase() === $this) {
+                $MatchGame->setPhase(null);
             }
         }
 

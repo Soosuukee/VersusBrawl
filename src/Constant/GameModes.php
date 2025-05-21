@@ -4,128 +4,125 @@ namespace App\Constant;
 
 final class GameModes
 {
-    // Tableau associatif : chaque jeu => tableau de modes
     public const MODES = [
+        'fortnite' => [
+            'battle_royale' => ['solo' => [], 'duo' => [], 'trio' => [], 'squad' => []],
+            'zero_build_battle_royale' => ['solo' => [], 'duo' => [], 'trio' => [], 'squad' => []],
+            'reload' => ['solo' => [], 'duo' => []],
+            'zero_build_reload' => ['solo' => [], 'duo' => []],
+            'creative' => ['boxfight' => ['1v1', '2v2', '3v3', '4v4'], 'zone_wars' => ['1v1', '2v2', '3v3', '4v4'], 'realistic' => ['1v1', '2v2', '3v3', '4v4']],
+        ],
         'apex-legends' => [
-            'Battle Royale'
+            'default' => ['battle_royale' => []],
         ],
         'counter-strike-2' => [
-            'Bomb Defusal',
-            'Deathmatch',
-        ],
-        'dota2' => [
-            "Captains Mode",
-            "All Pick",
-        ],
-        'fortnite' => [
-            'Battle Royale' => [
-                'Solo',
-                'Duo',
-                'Trio',
-                'Squad',
-            ],
-            'Zero Build Battle Royale' => [
-                'Solo',
-                'Duo',
-                'Trio',
-                'Squad',
-            ],
-            'Reload' => [
-                'Solo',
-                'Duo'
-            ],
-            'Zero Build Reload' => [
-                'Solo',
-                'Duo'
-            ],
-            'Creative' => [
-                'Boxfight',
-                'Zone Wars',
-                'Realistic'
-            ]
-        ],
-        'fragpunk' => [
-            'Shard Clash',
-        ],
-        'league-of-legends' => [
-            "Summoner\'s Rift",
-        ],
-        'marvel-rivals' => [
-            'Convoy',
-            'Domination',
-            'Convergence',
-        ],
-        'overwatch-2' => [
-            'Control',
-            'Escort',
-            'Hybrid',
-            'Push'
-        ],
-        'pokemon' => [
-            'VGC (2v2 Double Battles)',
-            'Smogon Singles',
-        ],
-        'rocket-league' => [
-            'Duel',
-            'Doubles',
-            'Standard',
-        ],
-        'super-smash-bros' => [
-            'Singles',
-            'Doubles',
-        ],
-        'teamfight-tactics' => [
-            'Free For All',
-        ],
-        'rainbow-six-siege' => [
-            'Bomb',
+            'default' => ['bomb_defusal' => [], 'deathmatch' => []],
         ],
         'valorant' => [
-            'Plant/Defuse',
-            'Deathmatch',
+            'default' => ['plant_defuse' => [], 'deathmatch' => []],
+        ],
+        'rainbow-six-siege' => [
+            'default' => ['bomb' => []],
+        ],
+        'overwatch-2' => [
+            'default' => ['control' => [], 'escort' => [], 'hybrid' => [], 'push' => []],
+        ],
+        'fragpunk' => [
+            'default' => ['shard_clash' => []],
+        ],
+        'marvel-rivals' => [
+            'default' => ['convoy' => [], 'domination' => [], 'convergence' => []],
+        ],
+
+        'league-of-legends' => [
+            'default' => ['summoners_rift' => []],
+        ],
+        'dota2' => [
+            'default' => ['captains_mode' => [], 'all_pick' => []],
+        ],
+
+        'super-smash-bros' => [
+            'default' => ['singles' => [], 'doubles' => []],
         ],
         'tekken-8' => [
-            'Singles',
+            'default' => ['singles' => []],
         ],
-        'street-fighter-6' => [
-            'Singles',
+        'teamfight-tactics' => [
+            'default' => ['free_for_all' => []],
         ],
-        'pubg' => [
-            'Battle Royale' => [
-                'Solo',
-                'Squad'
-            ]
+        'rocket-league' => [
+            'default' => ['duel' => [], 'doubles' => [], 'standard' => []],
         ],
-        'warzone' => [
-            'Battle Royale' => [
-                'Solo',
-                'Duo',
-                'Trio',
-                'Squad'
-            ]
-        ],
-        'call-of-duty' => [
-            'Control',
-            'Search & Destroy',
-            'Hardpoint',
-        ],
-        'the-finals' => [
-            '3v3v3v3 Tournament',
-        ],
-        'dragon-ball-fighterz' => [
-            'Versus (1v1, 3 Characters)',
-        ],
-        'dragon-ball-sparking-zero' => [
-            'Versus (1v1, 3 Characters)',,
-        ],
-        'brawlhalla' => [
-            'Singles',
-            'Doubles',
+        'pokemon' => [
+            'default' => ['vgc_2v2_double_battles' => [], 'smogon_singles' => ['OU (OverUsed)', 'Ubers', 'UU (UnderUsed)', 'RU (RarelyUsed)', 'NU (NeverUsed)', 'PU', 'LC (Little Cup)', 'Monotype', 'Balanced Hackmons', 'Anything Goes (AG)']],
         ],
     ];
 
-    public static function getModesByGame(string $gameSlug): array
+    public static function getGames(): array
     {
-        return self::MODES[$gameSlug] ?? [];
+        return array_keys(self::MODES);
+    }
+
+    public static function getCategoriesForGame(string $slug): array
+    {
+        return array_keys(self::MODES[$slug] ?? []);
+    }
+
+    public static function getModesForGameAndCategory(string $slug, string $category): array
+    {
+        return self::MODES[$slug][$category] ?? [];
+    }
+
+    public static function hasSubFormats(string $slug, string $category, string $mode): bool
+    {
+        return isset(self::MODES[$slug][$category][$mode]) &&
+            is_array(self::MODES[$slug][$category][$mode]) &&
+            !empty(self::MODES[$slug][$category][$mode]);
+    }
+
+    public static function getSubFormats(string $slug, string $category, string $mode): array
+    {
+        return self::MODES[$slug][$category][$mode] ?? [];
+    }
+
+    public static function getFullPathOptions(string $slug): array
+    {
+        $result = [];
+        foreach (self::MODES[$slug] ?? [] as $category => $modes) {
+            foreach ($modes as $mode => $subFormats) {
+                if (!empty($subFormats)) {
+                    foreach ($subFormats as $format) {
+                        $result[] = [
+                            'category' => $category,
+                            'mode' => $mode,
+                            'format' => $format,
+                        ];
+                    }
+                } else {
+                    $result[] = [
+                        'category' => $category,
+                        'mode' => $mode,
+                        'format' => null,
+                    ];
+                }
+            }
+        }
+        return $result;
+    }
+
+
+    public static function getAllGameModesStructured(): array
+    {
+        $all = [];
+        foreach (self::MODES as $category => $modes) {
+            foreach ($modes as $mode) {
+                $all[] = $mode;
+            }
+        }
+        return $all;
+    }
+    public static function getAllGameSlugs(): array
+    {
+        return array_keys(self::MODES);
     }
 }

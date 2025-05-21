@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\MatchgameParticipant;
+use App\Entity\MatchGameParticipant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<MatchgameParticipant>
+ * @extends ServiceEntityRepository<MatchGameParticipant>
  */
-class MatchgameParticipantRepository extends ServiceEntityRepository
+class MatchGameParticipantRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, MatchgameParticipant::class);
+        parent::__construct($registry, MatchGameParticipant::class);
     }
 
     //    /**
-    //     * @return MatchgameParticipant[] Returns an array of MatchgameParticipant objects
+    //     * @return MatchGameParticipant[] Returns an array of MatchGameParticipant objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class MatchgameParticipantRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?MatchgameParticipant
+    //    public function findOneBySomeField($value): ?MatchGameParticipant
     //    {
     //        return $this->createQueryBuilder('m')
     //            ->andWhere('m.exampleField = :val')

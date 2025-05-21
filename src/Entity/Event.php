@@ -2,12 +2,16 @@
 
 namespace App\Entity;
 
+use App\Constant\GameModes;
 use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
+#[Assert\Callback('validateGameMode')]
 class Event
 {
     #[ORM\Id]
@@ -39,8 +43,11 @@ class Event
     #[ORM\Column(length: 50)]
     private string $scoringMode = 'standard';
 
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: ScoringRule::class, cascade: ['persist', 'remove'])]
-    private Collection $scoringRules;
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $category = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $format = null;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
@@ -49,6 +56,9 @@ class Event
     #[ORM\ManyToOne(inversedBy: 'createdEvents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $CreatedBy = null;
+
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: ScoringRule::class, cascade: ['persist', 'remove'])]
+    private Collection $scoringRules;
 
     #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'event')]
     private Collection $participants;
@@ -61,6 +71,42 @@ class Event
         $this->participants = new ArrayCollection();
         $this->phases = new ArrayCollection();
         $this->scoringRules = new ArrayCollection();
+    }
+
+    public static function validateGameMode(self $event, ExecutionContextInterface $context): void
+    {
+        $game = $event->getGame();
+        if (!$game) {
+            return;
+        }
+
+        $slug = $game->getSlug();
+
+        if ($event->getCategory() && !in_array($event->getCategory(), GameModes::getCategoriesForGame($slug))) {
+            $context->buildViolation('Catégorie invalide pour ce jeu.')
+                ->atPath('category')
+                ->addViolation();
+        }
+
+        if ($event->getCategory() && $event->getMode()) {
+            $validModes = array_keys(GameModes::getModesForGameAndCategory($slug, $event->getCategory()));
+            if (!in_array($event->getMode(), $validModes)) {
+                $context->buildViolation('Mode invalide pour cette catégorie.')
+                    ->atPath('mode')
+                    ->addViolation();
+            }
+        }
+
+        if ($event->getCategory() && $event->getMode() && $event->getFormat()) {
+            if (GameModes::hasSubFormats($slug, $event->getCategory(), $event->getMode())) {
+                $validFormats = GameModes::getSubFormats($slug, $event->getCategory(), $event->getMode());
+                if (!in_array($event->getFormat(), $validFormats)) {
+                    $context->buildViolation('Format invalide pour ce mode.')
+                        ->atPath('format')
+                        ->addViolation();
+                }
+            }
+        }
     }
 
     public function getId(): ?int
@@ -128,12 +174,10 @@ class Event
         return $this;
     }
 
-
     public function getMode(): ?string
     {
         return $this->mode;
     }
-
     public function setMode(?string $mode): static
     {
         $this->mode = $mode;
@@ -150,21 +194,25 @@ class Event
         return $this;
     }
 
-    public function getScoringRules(): Collection
+    public function getCategory(): ?string
     {
-        return $this->scoringRules;
+        return $this->category;
     }
-    public function addScoringRule(ScoringRule $rule): static
+
+    public function setCategory(string $category): static
     {
-        if (!$this->scoringRules->contains($rule)) {
-            $this->scoringRules->add($rule);
-            $rule->setEvent($this);
-        }
+        $this->category = $category;
         return $this;
     }
-    public function removeScoringRule(ScoringRule $rule): static
+
+    public function getFormat(): ?string
     {
-        $this->scoringRules->removeElement($rule);
+        return $this->format;
+    }
+
+    public function setFormat(?string $format): static
+    {
+        $this->format = $format;
         return $this;
     }
 
@@ -185,6 +233,24 @@ class Event
     public function setCreatedBy(?User $CreatedBy): static
     {
         $this->CreatedBy = $CreatedBy;
+        return $this;
+    }
+
+    public function getScoringRules(): Collection
+    {
+        return $this->scoringRules;
+    }
+    public function addScoringRule(ScoringRule $rule): static
+    {
+        if (!$this->scoringRules->contains($rule)) {
+            $this->scoringRules->add($rule);
+            $rule->setEvent($this);
+        }
+        return $this;
+    }
+    public function removeScoringRule(ScoringRule $rule): static
+    {
+        $this->scoringRules->removeElement($rule);
         return $this;
     }
 

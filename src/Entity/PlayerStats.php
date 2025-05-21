@@ -40,7 +40,7 @@ class PlayerStats
 
     #[ORM\ManyToOne(inversedBy: 'playerStats')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?MatchgameParticipant $matchParticipant = null;
+    private ?MatchGameParticipant $matchParticipant = null;
 
     #[ORM\ManyToOne(inversedBy: 'playerStats')]
     #[ORM\JoinColumn(nullable: false)]
@@ -144,12 +144,12 @@ class PlayerStats
         return $this;
     }
 
-    public function getMatchParticipant(): ?MatchgameParticipant
+    public function getMatchParticipant(): ?MatchGameParticipant
     {
         return $this->matchParticipant;
     }
 
-    public function setMatchParticipant(?MatchgameParticipant $matchParticipant): static
+    public function setMatchParticipant(?MatchGameParticipant $matchParticipant): static
     {
         $this->matchParticipant = $matchParticipant;
 
