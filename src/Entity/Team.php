@@ -22,9 +22,6 @@ class Team
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $players = null;
-
     #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'team')]
     private Collection $eventParticipations;
 
@@ -69,17 +66,6 @@ class Team
     public function setImage(string $image): static
     {
         $this->image = $image;
-        return $this;
-    }
-
-    public function getPlayers(): array
-    {
-        return $this->players;
-    }
-
-    public function setPlayers(array $players): static
-    {
-        $this->players = $players;
         return $this;
     }
 

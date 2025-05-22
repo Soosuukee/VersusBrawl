@@ -5,8 +5,9 @@ namespace App\DataFixtures;
 use App\Entity\Game;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 
-class GameFixtures extends Fixture
+class GameFixtures extends Fixture implements FixtureGroupInterface
 {
 
     public static function getGroups(): array

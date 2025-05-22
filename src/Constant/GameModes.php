@@ -37,7 +37,7 @@ final class GameModes
         'league-of-legends' => [
             'default' => ['summoners_rift' => []],
         ],
-        'dota2' => [
+        'dota-2' => [
             'default' => ['captains_mode' => [], 'all_pick' => []],
         ],
 

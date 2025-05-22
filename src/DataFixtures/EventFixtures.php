@@ -27,37 +27,48 @@ class EventFixtures extends Fixture implements FixtureGroupInterface
 
     public function load(ObjectManager $manager): void
     {
-        // Récupération de l'utilisateur admin
         $admin = $manager->getRepository(User::class)->findOneBy(['email' => 'admin@versusbrawl.test']);
 
-        // Récupération des jeux par slug
         $fortnite = $manager->getRepository(Game::class)->findOneBy(['slug' => 'fortnite']);
-        $valorant = $manager->getRepository(Game::class)->findOneBy(['slug' => 'valorant']);
+        $lol = $manager->getRepository(Game::class)->findOneBy(['slug' => 'league-of-legends']);
+        $dota2 = $manager->getRepository(Game::class)->findOneBy(['slug' => 'dota-2']);
 
         $events = [
             [
-                'name' => '', // Viol : nom vide
+                'name' => 'Fortnite Zone Wars 3v3',
                 'game' => $fortnite,
-                'category' => 'wrong_category', // Viol : catégorie inexistante
-                'mode' => 'deathmatch', // Viol : mode incohérent pour la catégorie
-                'format' => '10v10', // Viol : format inexistant
-                'image' => '', // Viol : vide
-                'scoringMode' => '', // Viol : vide
-                'description' => '', // Viol : vide
-                'date' => new \DateTime('-5 days'), // Event dans le passé
-                'requiredPlayers' => 0, // Viol : nombre incohérent
+                'category' => 'creative',
+                'mode' => 'zone_wars',
+                'format' => '3v3',
+                'image' => 'fortnite_event.jpg',
+                'scoringMode' => 'standard',
+                'description' => 'Tournoi Fortnite Zone Wars 3v3.',
+                'date' => new \DateTime('+5 days'),
+                'requiredPlayers' => 6,
             ],
             [
-                'name' => 'Broken Event 2',
-                'game' => $valorant,
+                'name' => 'League of Legends Summoners Rift',
+                'game' => $lol,
                 'category' => 'default',
-                'mode' => 'solo', // Viol : solo n'est pas un mode Valorant
-                'format' => '1v1',
-                'image' => 'broken.jpg',
-                'scoringMode' => 'unknown',
-                'description' => 'Ce tournoi ne respecte rien.',
-                'date' => new \DateTime('-1 day'),
-                'requiredPlayers' => -3,
+                'mode' => 'summoners_rift',
+                'format' => null,
+                'image' => 'lol_event.jpg',
+                'scoringMode' => 'standard',
+                'description' => 'Tournoi LoL classique.',
+                'date' => new \DateTime('+10 days'),
+                'requiredPlayers' => 5,
+            ],
+            [
+                'name' => 'Dota 2 All Pick Clash',
+                'game' => $dota2,
+                'category' => 'default',
+                'mode' => 'all_pick',
+                'format' => null,
+                'image' => 'dota2_event.jpg',
+                'scoringMode' => 'standard',
+                'description' => 'Tournoi All Pick sur Dota 2.',
+                'date' => new \DateTime('+12 days'),
+                'requiredPlayers' => 5,
             ]
         ];
 
