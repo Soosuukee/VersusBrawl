@@ -2,17 +2,23 @@
 
 namespace App\Controller;
 
+use App\Repository\EventRepository;
+use App\Repository\GameRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
-final class IndexController extends AbstractController
+class IndexController extends AbstractController
 {
-    #[Route('/', name: 'app_index')]
-    public function index(): Response
+    #[Route('/', name: 'home')]
+    public function index(EventRepository $eventRepository, GameRepository $gameRepository): Response
     {
-        return $this->render('index/index.html.twig', [
-            'controller_name' => 'IndexController',
+        $lastEvents = $eventRepository->findBy([], ['date' => 'DESC'], 5);
+        $games = $gameRepository->findAll();
+
+        return $this->render('home/index.html.twig', [
+            'lastEvents' => $lastEvents,
+            'games' => $games,
         ]);
     }
 }

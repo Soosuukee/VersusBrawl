@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Accueil - VersusBrawl
+{% endblock %}
+
+{% block body %}
+  <div class="navbar">
+    <h2>Jeux disponibles</h2>
+    <ul>
+      {% for game in games %}
+        <li>{{ game.name|title }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="last-events">
+    <h2>Last Events</h2>
+    <div class="events-grid" style="display: flex; gap: 20px; flex-wrap: wrap;">
+      {% for event in lastEvents %}
+        <div class="event-card" style="border: 1px solid #ccc; padding: 10px; width: 250px;">
+          <img src="{{ asset('images/heroes/' ~ event.game.name ~ '_heroes.png') }}" alt="{{ event.game.name }}" style="width: 100%;" />
+          <h3>{{ event.name }}</h3>
+          <p>
+            <strong>Jeu :</strong> {{ event.game.name|title }}
+          </p>
+          <p>
+            <strong>Date :</strong> {{ event.date|date('d/m/Y') }}
+          </p>
+          <p>{{ event.description }}</p>
+        </div>
+      {% else %}
+        <p>Aucun événement trouvé.</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

@@ -5,11 +5,11 @@ namespace App\DataFixtures;
 use App\Entity\Event;
 use App\Entity\Game;
 use App\Entity\User;
+use App\Traits\EntityValidationTrait;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use App\Traits\EntityValidationTrait;
 
 class EventFixtures extends Fixture implements FixtureGroupInterface
 {
@@ -28,7 +28,6 @@ class EventFixtures extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $admin = $manager->getRepository(User::class)->findOneBy(['email' => 'admin@versusbrawl.test']);
-
         $fortnite = $manager->getRepository(Game::class)->findOneBy(['slug' => 'fortnite']);
         $lol = $manager->getRepository(Game::class)->findOneBy(['slug' => 'league-of-legends']);
         $dota2 = $manager->getRepository(Game::class)->findOneBy(['slug' => 'dota-2']);
@@ -87,7 +86,6 @@ class EventFixtures extends Fixture implements FixtureGroupInterface
             $event->setRequiredPlayers($data['requiredPlayers']);
 
             $this->validateOrFail($event);
-
             $manager->persist($event);
         }
 
