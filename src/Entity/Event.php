@@ -66,11 +66,21 @@ class Event
     #[ORM\OneToMany(targetEntity: Phase::class, mappedBy: 'event', orphanRemoval: true)]
     private Collection $phases;
 
+    #[ORM\Column]
+    private ?bool $isSolo = null;
+
+    /**
+     * @var Collection<int, EventUser>
+     */
+    #[ORM\OneToMany(targetEntity: EventUser::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $eventUsers;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
         $this->phases = new ArrayCollection();
         $this->scoringRules = new ArrayCollection();
+        $this->eventUsers = new ArrayCollection();
     }
 
     public static function validateGameMode(self $event, ExecutionContextInterface $context): void
@@ -295,6 +305,48 @@ class Event
                 $phase->setEvent(null);
             }
         }
+        return $this;
+    }
+
+    public function isSolo(): ?bool
+    {
+        return $this->isSolo;
+    }
+
+    public function setIsSolo(bool $isSolo): static
+    {
+        $this->isSolo = $isSolo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventUser>
+     */
+    public function getEventUsers(): Collection
+    {
+        return $this->eventUsers;
+    }
+
+    public function addEventUser(EventUser $eventUser): static
+    {
+        if (!$this->eventUsers->contains($eventUser)) {
+            $this->eventUsers->add($eventUser);
+            $eventUser->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventUser(EventUser $eventUser): static
+    {
+        if ($this->eventUsers->removeElement($eventUser)) {
+            // set the owning side to null (unless already changed)
+            if ($eventUser->getEvent() === $this) {
+                $eventUser->setEvent(null);
+            }
+        }
+
         return $this;
     }
 }

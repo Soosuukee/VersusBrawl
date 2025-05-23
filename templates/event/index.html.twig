@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <h1 class="text-2xl font-bold mb-4">Liste des événements</h1>
+
+  <form method="get" class="mb-6 space-y-4">
+    <div>
+      <label>Entre :</label>
+      <input type="date" name="start" value="{{ filters.start }}" />
+      <label>et</label>
+      <input type="date" name="end" value="{{ filters.end }}" />
+    </div>
+
+    <div>
+      <label>Jeu :</label>
+      <select name="game">
+        <option value="">Tous</option>
+        {% for g in games %}
+          {% if filters.game is defined and filters.game == g.slug %}
+            <option value="{{ g.slug }}" selected>{{ g.name }}</option>
+          {% else %}
+            <option value="{{ g.slug }}">{{ g.name }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label>Mode complet :</label>
+      <input type="text" name="fullMode" value="{{ filters.fullMode }}" placeholder="Ex: creative &gt; boxfight &gt; 2v2" />
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary">Filtrer</button>
+    </div>
+  </form>
+
+  {% if events is not empty %}
+    <ul class="space-y-4">
+      {% for event in events %}
+        <li class="p-4 border rounded shadow-sm">
+          <div class="flex items-center space-x-3">
+            <img src="{{ asset('images/heroes/' ~ event.game.slug ~ '.png') }}" alt="{{ event.game.name }}" width="50" />
+            <div>
+              <strong>{{ event.name }}</strong><br />
+              {{ event.date|date('d/m/Y') }} – {{ event.game.name }}<br />
+              {{ event.category }} / {{ event.mode }}{% if event.format %}
+                / {{ event.format }}
+              {% endif %}<br />
+              <a href="{{ path('app_event_show', { slug: event.game.slug, id: event.id }) }}" class="text-blue-600 hover:underline">Voir</a>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Aucun événement trouvé.</p>
+  {% endif %}
+{% endblock %}

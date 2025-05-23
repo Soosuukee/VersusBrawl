@@ -42,12 +42,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: TeamMember::class, mappedBy: 'player', orphanRemoval: true)]
     private Collection $teamMembers;
 
+    /**
+     * @var Collection<int, EventUser>
+     */
+    #[ORM\OneToMany(targetEntity: EventUser::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $eventUsers;
+
     public function __construct()
     {
         $this->createdEvents = new ArrayCollection();
         $this->matchGameParticipants = new ArrayCollection();
         $this->playerStats = new ArrayCollection();
         $this->teamMembers = new ArrayCollection();
+        $this->eventUsers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -206,6 +213,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $teamMember->setPlayer(null);
             }
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventUser>
+     */
+    public function getEventUsers(): Collection
+    {
+        return $this->eventUsers;
+    }
+
+    public function addEventUser(EventUser $eventUser): static
+    {
+        if (!$this->eventUsers->contains($eventUser)) {
+            $this->eventUsers->add($eventUser);
+            $eventUser->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventUser(EventUser $eventUser): static
+    {
+        if ($this->eventUsers->removeElement($eventUser)) {
+            // set the owning side to null (unless already changed)
+            if ($eventUser->getUser() === $this) {
+                $eventUser->setUser(null);
+            }
+        }
+
         return $this;
     }
 }

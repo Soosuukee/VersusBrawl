@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Game;
+use App\Entity\Event;
 use App\Constant\GameModes;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -25,13 +26,10 @@ class EventType extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Jeu',
             ])
-            ->add('category', ChoiceType::class, [
-                'choices' => self::getAllCategories(),
-                'label' => 'Catégorie de mode',
-            ])
             ->add('mode', ChoiceType::class, [
-                'choices' => self::getAllModes(),
+                'choices' => self::getFlatChoices('fortnite'),
                 'label' => 'Mode de jeu',
+                'placeholder' => 'Choisis un mode',
             ])
             ->add('scoringMode');
     }
@@ -39,33 +37,33 @@ class EventType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Event::class,
+            'data_class' => Event::class,
         ]);
     }
-
-    private static function getAllCategories(): array
+    private static function getFlatChoices(string $slug): array
     {
-        $categories = [];
-        foreach (GameModes::MODES as $modes) {
-            foreach (array_keys($modes) as $category) {
-                $label = $category === 'default' ? 'Mode standard' : ucfirst(str_replace('_', ' ', $category));
-                $categories[$label] = $category;
-            }
-        }
-        return $categories;
-    }
+        $choices = [];
+        $options = GameModes::getFullPathOptions($slug);
 
-    private static function getAllModes(): array
-    {
-        $modes = [];
-        foreach (GameModes::MODES as $modesByCategory) {
-            foreach ($modesByCategory as $list) {
-                foreach ($list as $mode) {
-                    $label = ucfirst(str_replace('_', ' ', $mode));
-                    $modes[$label] = $mode;
-                }
+        foreach ($options as $opt) {
+            $parts = [];
+
+            if ($opt['category'] !== 'default') {
+                $parts[] = $opt['category'];
             }
+
+            $parts[] = $opt['mode'];
+
+            if ($opt['format']) {
+                $parts[] = $opt['format'];
+            }
+
+            $label = implode(' > ', $parts);
+            $value = implode('|', [$opt['category'], $opt['mode'], $opt['format'] ?? '']);
+
+            $choices[$label] = $value;
         }
-        return $modes;
+
+        return $choices;
     }
 }
