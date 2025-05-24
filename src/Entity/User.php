@@ -30,6 +30,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $icon = null;
+
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'CreatedBy')]
     private Collection $createdEvents;
 
@@ -42,9 +45,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: TeamMember::class, mappedBy: 'player', orphanRemoval: true)]
     private Collection $teamMembers;
 
-    /**
-     * @var Collection<int, EventUser>
-     */
     #[ORM\OneToMany(targetEntity: EventUser::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $eventUsers;
 
@@ -110,6 +110,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+        return $this;
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): static
+    {
+        $this->icon = $icon;
         return $this;
     }
 
@@ -216,9 +227,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, EventUser>
-     */
     public function getEventUsers(): Collection
     {
         return $this->eventUsers;
@@ -230,19 +238,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->eventUsers->add($eventUser);
             $eventUser->setUser($this);
         }
-
         return $this;
     }
 
     public function removeEventUser(EventUser $eventUser): static
     {
         if ($this->eventUsers->removeElement($eventUser)) {
-            // set the owning side to null (unless already changed)
             if ($eventUser->getUser() === $this) {
                 $eventUser->setUser(null);
             }
         }
-
         return $this;
     }
 }

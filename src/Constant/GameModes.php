@@ -21,7 +21,7 @@ final class GameModes
         'valorant' => [
             'default' => ['plant_defuse' => [], 'deathmatch' => []],
         ],
-        'rainbow-six-siege' => [
+        'tom-clancy-s-rainbow-six-siege' => [
             'default' => ['bomb' => []],
         ],
         'overwatch-2' => [

@@ -1,5 +1,4 @@
 <?php
-// src/DataFixtures/TeamMemberFixtures.php
 
 namespace App\DataFixtures;
 
@@ -25,25 +24,85 @@ class TeamMemberFixtures extends Fixture implements FixtureGroupInterface, Depen
 
     public function load(ObjectManager $manager): void
     {
-        $teams = [
-            'alpha_wolves' => ['player1', 'player2', 'player3'],
-            'crimson_blades' => ['player4', 'player5', 'player6'],
-            'neon_titans' => ['player7', 'player8', 'player9'],
-            'shadow_foxes' => ['player10', 'player11', 'player12'],
+        $teamSlugs = [
+            'aacade',
+            'alphawolves',
+            'apexwarden',
+            'arcademaster',
+            'arctichowl',
+            'berserkers',
+            'blazeauthority',
+            'cobraclan',
+            'crimsonvortex',
+            'crimsonblades',
+            'dragons',
+            'emberreign',
+            'falcon',
+            'frostbitecollective',
+            'gecko',
+            'grimreapers',
+            'inferno',
+            'ironwolves',
+            'lunarlegion',
+            'neontempest',
+            'neontitans',
+            'novahounds',
+            'onyx',
+            'oxen',
+            'phantomcore',
+            'phoenixclaw',
+            'polar',
+            'pyros',
+            'rebels',
+            'rhinos',
+            'scorpion',
+            'shadowsyndicate',
+            'shadowfoxes',
+            'sharks',
+            'thunderbolts',
+            'titandrifters',
+            'titanslayers',
+            'valiant',
+            'valianthawks',
+            'valor',
+            'venomunit',
+            'victorysquadron',
+            'voidraptors',
+            'volcano',
+            'vortex',
+            'wildcats'
         ];
 
-        foreach ($teams as $teamSlug => $usernames) {
-            /** @var Team $team */
-            $team = $this->getReference('team_' . $teamSlug, Team::class);
+        $usernames = [];
+        for ($i = 1; $i <= 99; $i++) {
+            $usernames[] = 'player' . $i;
+        }
 
-            foreach ($usernames as $index => $username) {
+        shuffle($usernames);
+        $userIndex = 0;
+
+        foreach ($teamSlugs as $slug) {
+            /** @var Team $team */
+            $team = $this->getReference('team_' . $slug, Team::class);
+
+            $teamSize = random_int(3, 6);
+            $remaining = count($usernames) - $userIndex;
+
+            if ($remaining <= 0) break;
+
+            $teamSize = min($teamSize, $remaining);
+
+            for ($i = 0; $i < $teamSize; $i++) {
+                $username = $usernames[$userIndex];
+                $userIndex++;
+
                 /** @var User $user */
                 $user = $this->getReference('user_' . $username, User::class);
 
                 $member = new TeamMember();
                 $member->setPlayer($user);
                 $member->setTeam($team);
-                $member->setIsCaptain($index === 0);
+                $member->setIsCaptain($i === 0);
 
                 $manager->persist($member);
             }

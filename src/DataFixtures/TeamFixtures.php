@@ -1,10 +1,8 @@
 <?php
-// src/DataFixtures/TeamFixtures.php
 
 namespace App\DataFixtures;
 
 use App\Entity\Team;
-use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -24,20 +22,66 @@ class TeamFixtures extends Fixture implements FixtureGroupInterface, DependentFi
 
     public function load(ObjectManager $manager): void
     {
-        $teams = [
-            ['name' => 'Alpha Wolves', 'image' => 'alphawolves.png'],
-            ['name' => 'Crimson Blades', 'image' => 'crimsonblades.png'],
-            ['name' => 'Neon Titans', 'image' => 'neontitans.png'],
-            ['name' => 'Shadow Foxes', 'image' => 'shadowfoxes.png'],
+        $filenames = [
+            'aacade',
+            'alphawolves',
+            'apexwarden',
+            'arcademaster',
+            'arctichowl',
+            'berserkers',
+            'blazeauthority',
+            'cobraclan',
+            'crimsonvortex',
+            'crimsonblades',
+            'dragons',
+            'emberreign',
+            'falcon',
+            'frostbitecollective',
+            'gecko',
+            'grimreapers',
+            'inferno',
+            'ironwolves',
+            'lunarlegion',
+            'neontempest',
+            'neontitans',
+            'novahounds',
+            'onyx',
+            'oxen',
+            'phantomcore',
+            'phoenixclaw',
+            'polar',
+            'pyros',
+            'rebels',
+            'rhinos',
+            'scorpion',
+            'shadowsyndicate',
+            'shadowfoxes',
+            'sharks',
+            'thunderbolts',
+            'titandrifters',
+            'titanslayers',
+            'valiant',
+            'valianthawks',
+            'valor',
+            'venomunit',
+            'victorysquadron',
+            'voidraptors',
+            'volcano',
+            'vortex',
+            'wildcats'
         ];
 
-        foreach ($teams as $data) {
+        foreach ($filenames as $slug) {
             $team = new Team();
-            $team->setName($data['name']);
-            $team->setImage($data['image']);
+
+            // Nom lisible (Alpha Wolves, etc.)
+            $name = ucwords(preg_replace('/(?<!^)([A-Z])/', ' $1', $slug));
+            $image = $slug . '.png';
+
+            $team->setName($name);
+            $team->setImage($image);
 
             $manager->persist($team);
-            $slug = strtolower(str_replace(' ', '_', $data['name']));
             $this->addReference('team_' . $slug, $team);
         }
 
