@@ -10,6 +10,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Constant\GameModes;
 
 class EventFixtures extends Fixture implements FixtureGroupInterface
 {
@@ -28,65 +29,60 @@ class EventFixtures extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $admin = $manager->getRepository(User::class)->findOneBy(['email' => 'admin@versusbrawl.test']);
-        $fortnite = $manager->getRepository(Game::class)->findOneBy(['slug' => 'fortnite']);
-        $lol = $manager->getRepository(Game::class)->findOneBy(['slug' => 'league-of-legends']);
-        $dota2 = $manager->getRepository(Game::class)->findOneBy(['slug' => 'dota-2']);
 
-        $events = [
-            [
-                'name' => 'Fortnite Zone Wars 3v3',
-                'game' => $fortnite,
-                'category' => 'creative',
-                'mode' => 'zone_wars',
-                'format' => '3v3',
-                'image' => 'fortnite_event.jpg',
-                'scoringMode' => 'standard',
-                'description' => 'Tournoi Fortnite Zone Wars 3v3.',
-                'date' => new \DateTime('+5 days'),
-                'requiredPlayers' => 6,
-            ],
-            [
-                'name' => 'League of Legends Summoners Rift',
-                'game' => $lol,
-                'category' => 'default',
-                'mode' => 'summoners_rift',
-                'format' => null,
-                'image' => 'lol_event.jpg',
-                'scoringMode' => 'standard',
-                'description' => 'Tournoi LoL classique.',
-                'date' => new \DateTime('+10 days'),
-                'requiredPlayers' => 5,
-            ],
-            [
-                'name' => 'Dota 2 All Pick Clash',
-                'game' => $dota2,
-                'category' => 'default',
-                'mode' => 'all_pick',
-                'format' => null,
-                'image' => 'dota2_event.jpg',
-                'scoringMode' => 'standard',
-                'description' => 'Tournoi All Pick sur Dota 2.',
-                'date' => new \DateTime('+12 days'),
-                'requiredPlayers' => 5,
-            ]
+        $imageMap = [
+            'fortnite' => 'fncs-global.jpg',
+            'counter-strike-2' => 'PGL-CS2-Major-Copenhagen-2024.jpg',
+            'league-of-legends' => 'LoLWorlds2024.avif',
+            'super-smash-bros' => 'Smash-Ultimate-Summit-5.avif',
+            'valorant' => 'valorant-champions.jpg',
         ];
 
-        foreach ($events as $data) {
-            $event = new Event();
-            $event->setName($data['name']);
-            $event->setGame($data['game']);
-            $event->setCreatedBy($admin);
-            $event->setDate($data['date']);
-            $event->setCategory($data['category']);
-            $event->setMode($data['mode']);
-            $event->setFormat($data['format']);
-            $event->setScoringMode($data['scoringMode']);
-            $event->setDescription($data['description']);
-            $event->setImage($data['image']);
-            $event->setRequiredPlayers($data['requiredPlayers']);
+        $usedImageGames = [];
+        $allSlugs = GameModes::getAllGameSlugs();
+        $startDate = (new \DateTime('2024-05-24'))->getTimestamp();
+        $endDate = (new \DateTime('2026-05-24'))->getTimestamp();
 
-            $this->validateOrFail($event);
-            $manager->persist($event);
+        foreach ($allSlugs as $slug) {
+            $game = $manager->getRepository(Game::class)->findOneBy(['slug' => $slug]);
+            if (!$game) continue;
+
+            $paths = GameModes::getFullPathOptions($slug);
+            if (empty($paths)) continue;
+
+            shuffle($paths);
+            $count = 0;
+
+            foreach ($paths as $path) {
+                $isSolo = in_array($path['format'], ['1v1']) ||
+                    ($slug === 'teamfight-tactics' && $path['mode'] === 'free_for_all') ||
+                    ($slug === 'pokemon' && in_array($path['mode'], ['smogon_singles', 'vgc_2v2_double_battles']));
+
+                $event = new Event();
+                $event->setName(ucfirst($slug) . ' ' . ucfirst($path['mode']) . ' Event ' . ($count + 1));
+                $event->setGame($game);
+                $event->setCreatedBy($admin);
+                $event->setCategory($path['category']);
+                $event->setMode($path['mode']);
+                $event->setFormat($path['format']);
+                $event->setScoringMode('standard');
+                $event->setDescription('Tournoi ' . $path['mode'] . ' sur ' . ucfirst($slug));
+                $event->setDate((new \DateTime())->setTimestamp(rand($startDate, $endDate)));
+                $event->setRequiredPlayers($isSolo ? 1 : rand(2, 10));
+                $event->setIsSolo($isSolo);
+
+                if (!in_array($slug, $usedImageGames) && isset($imageMap[$slug])) {
+                    $event->setImage($imageMap[$slug]);
+                    $usedImageGames[] = $slug;
+                }
+
+                $this->validateOrFail($event);
+                $manager->persist($event);
+                $count++;
+
+                if ($count >= 2 && !$isSolo) break;
+                if ($isSolo && $count >= 3) break;
+            }
         }
 
         $manager->flush();

@@ -13,11 +13,20 @@ class IndexController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(EventRepository $eventRepository, GameRepository $gameRepository): Response
     {
-        $lastEvents = $eventRepository->findBy([], ['date' => 'DESC'], 5);
+        $today = new \DateTimeImmutable('today');
+
+        $upcomingEvents = $eventRepository->createQueryBuilder('e')
+            ->where('e.date >= :today')
+            ->setParameter('today', $today)
+            ->orderBy('e.date', 'ASC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
         $games = $gameRepository->findAll();
 
         return $this->render('home/index.html.twig', [
-            'lastEvents' => $lastEvents,
+            'lastEvents' => $upcomingEvents,
             'games' => $games,
         ]);
     }
