@@ -23,13 +23,12 @@ final class EventController extends AbstractController
         $game = $request->query->get('game');
         $fullMode = $request->query->get('fullMode');
         $gameName = $request->query->get('name');
+        $upcoming = $request->query->getBoolean('upcoming');
 
         $startDate = $start ? new \DateTime($start) : null;
         $endDate = $end ? new \DateTime($end) : null;
 
-        $events = $em->getRepository(Event::class)
-            ->findUpcomingFiltered($startDate, $endDate, $game, $fullMode, $gameName);
-
+        $events = $em->getRepository(Event::class)->findUpcomingFiltered($startDate, $endDate, $game, $fullMode, $gameName, $upcoming);
         $games = $em->getRepository(\App\Entity\Game::class)->findAll();
 
         return $this->render('event/index.html.twig', [
@@ -41,6 +40,7 @@ final class EventController extends AbstractController
                 'game' => $game,
                 'fullMode' => $fullMode,
                 'name' => $gameName,
+                'upcoming' => $upcoming,
             ],
         ]);
     }
@@ -53,7 +53,6 @@ final class EventController extends AbstractController
 
         if ($user instanceof \App\Entity\User) {
             $user->getTeamMembers()->count();
-
             if ($event->isSolo()) {
                 $isRegistered = $eventUserRepo->isUserRegistered($event, $user);
             } else {
@@ -122,7 +121,6 @@ final class EventController extends AbstractController
         ]);
     }
 
-
     #[Route('/{slug}/{id}/edit', name: 'app_event_edit')]
     public function edit(Event $event, Request $request, EntityManagerInterface $em): Response
     {
@@ -167,6 +165,7 @@ final class EventController extends AbstractController
 
         return $this->redirectToRoute('app_event');
     }
+
     #[Route('/{slug}/{id}/registrations', name: 'app_event_registrations')]
     public function registrations(Event $event): Response
     {

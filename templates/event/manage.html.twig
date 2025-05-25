@@ -12,11 +12,11 @@
   {% endif %}
 
   {% if events is empty %}
-    <p class="text-gray-600 mt-4">Aucun événement trouvé.</p>
+    <p class="text-gray-300 mt-4">Aucun événement trouvé.</p>
   {% else %}
-    <table class="w-full border-collapse mt-4 text-sm">
+    <table class="w-full border-collapse mt-4 text-sm text-white rounded shadow" style="background-color: #6e9dff;">
       <thead>
-        <tr class="bg-gray-100 text-left">
+        <tr class="bg-gray-800 text-white">
           <th class="px-4 py-2">Nom</th>
           <th class="px-4 py-2">Date</th>
           <th class="px-4 py-2">Jeu</th>
@@ -26,21 +26,21 @@
       </thead>
       <tbody>
         {% for event in events %}
-          <tr class="border-t bg-white hover:bg-gray-50">
+          <tr class="border-t hover:bg-blue-600 transition">
             <td class="px-4 py-2 font-medium">{{ event.name }}</td>
             <td class="px-4 py-2">{{ event.date|date('d/m/Y') }}</td>
             <td class="px-4 py-2">{{ event.game.name }}</td>
             <td class="px-4 py-2">
               {{ event.createdBy.username }}
               {% if is_granted('ROLE_SUPER_ADMIN') %}
-                <span class="text-xs text-gray-500">({{ event.createdBy.roles[0]|replace({ ROLE_: '' })|lower|capitalize }})</span>
+                <span class="text-xs text-white/70">({{ event.createdBy.roles[0]|replace({ ROLE_: '' })|lower|capitalize }})</span>
               {% endif %}
             </td>
             <td class="px-4 py-2">
-              <a href="{{ path('app_event_show', { id: event.id, slug: event.game.slug }) }}" class="text-blue-600 hover:underline">Voir</a>
+              <a href="{{ path('app_event_show', { id: event.id, slug: event.game.slug }) }}" class="text-white underline hover:text-blue-200">Voir</a>
               {% if is_granted('EVENT_EDIT', event) %}
-                • <a href="{{ path('app_event_edit', { id: event.id, slug: event.game.slug }) }}" class="text-yellow-600 hover:underline">Modifier</a>
-                • <a href="{{ path('app_event_registrations', { id: event.id, slug: event.game.slug }) }}" class="text-green-600 hover:underline">Gérer les inscriptions</a>
+                • <a href="{{ path('app_event_edit', { id: event.id, slug: event.game.slug }) }}" class="text-yellow-300 hover:underline">Modifier</a>
+                • <a href="{{ path('app_event_registrations', { id: event.id, slug: event.game.slug }) }}" class="text-green-300 hover:underline">Gérer les inscriptions</a>
               {% endif %}
             </td>
           </tr>

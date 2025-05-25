@@ -7,6 +7,7 @@ use App\Entity\Event;
 use App\Constant\GameModes;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\AbstractType;
@@ -31,6 +32,10 @@ class EventType extends AbstractType
                 'label' => 'Mode de jeu',
                 'placeholder' => 'Choisis un mode',
             ])
+            ->add('isSolo', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Mode solo',
+            ])
             ->add('scoringMode');
     }
 
@@ -40,6 +45,7 @@ class EventType extends AbstractType
             'data_class' => Event::class,
         ]);
     }
+
     private static function getFlatChoices(string $slug): array
     {
         $choices = [];

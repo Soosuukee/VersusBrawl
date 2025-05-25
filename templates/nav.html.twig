@@ -5,11 +5,9 @@
     {% if app.user %}
       <span>Connecté en tant que <strong>{{ app.user.username }}</strong></span>
       <a href="{{ path('app_team_new') }}" class="hover:underline">Créer une équipe</a>
-
       {% if is_granted('ROLE_EVENT_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
         <a href="{{ path('app_event_manage') }}" class="hover:underline text-purple-300">Gérer mes événements</a>
       {% endif %}
-
       <a href="{{ path('app_logout') }}" class="hover:underline text-red-400">Déconnexion</a>
     {% else %}
       <a href="{{ path('app_login') }}" class="hover:underline">Connexion</a>

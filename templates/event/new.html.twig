@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Créer un événement
+{% endblock %}
+
+{% block body %}
+  <h1 class="text-3xl font-bold mb-6">Créer un événement</h1>
+
+  {{ form_start(form) }}
+  <div class="space-y-4">{{ form_row(form.name) }}
+    {{ form_row(form.date) }}
+    {{ form_row(form.requiredPlayers) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.game) }}
+    {{ form_row(form.mode) }}
+    {{ form_row(form.image) }}
+    {{ form_row(form.isSolo) }}
+    {{ form_row(form.scoringMode) }}</div>
+
+  <div class="mt-6">
+    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" type="submit">Créer</button>
+  </div>
+  {{ form_end(form) }}
+{% endblock %}

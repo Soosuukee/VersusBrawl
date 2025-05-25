@@ -27,7 +27,6 @@
     <p>
       <strong>Description :</strong> {{ event.description }}
     </p>
-
     {% if event.image %}
       <img src="{{ asset('images/events/' ~ event.image) }}" alt="Affiche de l'événement" class="w-full max-w-md mt-4" />
     {% else %}
@@ -46,7 +45,6 @@
         {% set validUsers = validUsers|merge([eu]) %}
       {% endif %}
     {% endfor %}
-
     {% if (validUsers|length) > 0 %}
       <ul class="list-disc pl-6 space-y-2">
         {% for eu in validUsers %}
@@ -63,7 +61,6 @@
         {% set validTeams = validTeams|merge([p]) %}
       {% endif %}
     {% endfor %}
-
     {% if (validTeams|length) > 0 %}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for participation in validTeams %}
