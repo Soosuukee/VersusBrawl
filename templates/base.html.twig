@@ -2,46 +2,31 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
       {% block title %}
-        Welcome!
+        HB Corp
       {% endblock %}
     </title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>" />
-
     {% block stylesheets %}
 
     {% endblock %}
 
     {% block javascripts %}
       {% block importmap %}
-        {# {{importmap('app')}} #}
+        {{ importmap('app') }}
       {% endblock %}
     {% endblock %}
   </head>
-  <body class="bg-gray-100 text-gray-900">
-    <nav class="bg-gray-800 text-white px-6 py-4 flex justify-between items-center shadow">
-      <a href="{{ path('home') }}" class="font-bold text-lg">VersusBrawl</a>
+  <body class="min-h-screen text-white bg-gray-900">
+    <header>{{ include('nav.html.twig') }}</header>
+    {% for message in app.flashes('success') %}
+      <div class="bg-green-600 px-6 py-4 text-white">{{ message }}</div>
+    {% endfor %}
 
-      <div class="space-x-4 text-sm">
-        {% if app.user %}
-          <span>Connecté en tant que <strong>{{ app.user.username }}</strong></span>
-          <a href="{{ path('app_team_new') }}" class="hover:underline">Créer une équipe</a>
-          {% if is_granted('ROLE_EVENT_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
-            <a href="{{ path('app_event_manage') }}" class="hover:underline text-purple-300">Gérer mes événements</a>
-          {% endif %}
-          <a href="{{ path('app_logout') }}" class="hover:underline text-red-400">Déconnexion</a>
-        {% else %}
-          <a href="{{ path('app_login') }}" class="hover:underline">Connexion</a>
-          <a href="{{ path('app_register') }}" class="hover:underline">Inscription</a>
-        {% endif %}
-      </div>
-    </nav>
+    {% block body %}
 
-    <main class="p-6">
-      {% block body %}
-
-      {% endblock %}
-    </main>
+    {% endblock %}
   </body>
 </html>

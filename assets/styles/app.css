@@ -3,5 +3,10 @@
 @tailwind utilities;
 
 body {
-    background-color: skyblue;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+input {
+  color: black;
 }
