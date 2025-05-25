@@ -5,15 +5,15 @@ namespace App\DataFixtures;
 use App\Entity\Team;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+// use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-class TeamFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
+class TeamFixtures extends Fixture implements DependentFixtureInterface
 {
-    public static function getGroups(): array
-    {
-        return ['teams_and_members'];
-    }
+    // public static function getGroups(): array
+    // {
+    //     return ['teams_and_members'];
+    // }
 
     public function getDependencies(): array
     {

@@ -10,11 +10,19 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class EventTeamFixtures extends Fixture implements FixtureGroupInterface
+class EventTeamFixtures extends Fixture implements DependentFixtureInterface
 {
-    public static function getGroups(): array
+    // public static function getGroups(): array
+    // {
+    //     return ['event_teams'];
+    // }
+
+    public function getDependencies(): array
     {
-        return ['event_teams'];
+        return [
+            EventFixtures::class,
+            TeamFixtures::class,
+        ];
     }
 
     public function load(ObjectManager $manager): void

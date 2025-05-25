@@ -11,6 +11,7 @@ use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/event')]
@@ -148,8 +149,9 @@ class EventRegistrationController extends AbstractController
         ]);
     }
 
-    #[Route('/{slug}/{id}/unregister-solo', name: 'app_event_unregister_solo')]
+    #[Route('/{slug}/{id}/unregister-solo', name: 'app_event_unregister_solo', methods: ['POST'])]
     public function unregisterSolo(
+        Request $request,
         string $slug,
         Event $event,
         EntityManagerInterface $em,
@@ -163,6 +165,10 @@ class EventRegistrationController extends AbstractController
                 'id' => $event->getId(),
                 'slug' => $event->getGame()->getSlug(),
             ]);
+        }
+
+        if (!$this->isCsrfTokenValid('unregister_solo_' . $event->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
         $eventUser = $eventUserRepository->findOneBy(['event' => $event, 'user' => $user]);
@@ -181,8 +187,9 @@ class EventRegistrationController extends AbstractController
         ]);
     }
 
-    #[Route('/{slug}/{id}/unregister-team/{teamId}', name: 'app_event_unregister_team')]
+    #[Route('/{slug}/{id}/unregister-team/{teamId}', name: 'app_event_unregister_team', methods: ['POST'])]
     public function unregisterTeam(
+        Request $request,
         string $slug,
         Event $event,
         int $teamId,
@@ -198,6 +205,10 @@ class EventRegistrationController extends AbstractController
                 'id' => $event->getId(),
                 'slug' => $event->getGame()->getSlug(),
             ]);
+        }
+
+        if (!$this->isCsrfTokenValid('unregister_team_' . $event->getId() . '_' . $teamId, $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
         $team = $teamRepo->find($teamId);

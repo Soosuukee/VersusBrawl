@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ team.name }} - Détails
+{% endblock %}
+
+{% block body %}
+  <h1 class="text-2xl font-bold mb-6">{{ team.name }}</h1>
+
+  {% if team.image %}
+    <img src="{{ asset('images/teams/' ~ team.image) }}" alt="{{ team.name }}" class="my-2 max-w-[150px]" />
+  {% endif %}
+
+  <p>
+    <strong>Capitaine :</strong> {{ team.captain.username }}
+  </p>
+  <h2 class="text-xl font-semibold mt-4">Membres</h2>
+  <ul class="list-disc pl-6">
+    {% for member in team.teamMembers %}
+      <li>
+        {{ member.player.username }} {% if member.isCaptain %}(Capitaine){% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h2 class="text-xl font-semibold mt-4">Événements</h2>
+  {% if team.eventParticipations is empty %}
+    <p class="text-gray-600">Cette équipe n’est inscrite à aucun événement.</p>
+  {% else %}
+    <ul class="list-disc pl-6">
+      {% for participation in team.eventParticipations %}
+        <li>
+          <a href="{{ path('app_event_show', { id: participation.event.id, slug: participation.event.game.slug }) }}">{{ participation.event.name }}</a>
+          - Statut :{% if participation.isValidated %}
+            Validée
+          {% else %}
+            En attente
+          {% endif %}
+          {% if is_granted('EVENT_EDIT', participation.event) %}
+            (<a href="{{ path('app_event_registrations', { id: participation.event.id, slug: participation.event.game.slug }) }}" class="text-green-600 hover:underline">Gérer</a>)
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <p class="mt-4">
+    <a href="{{ path('app_user_teams') }}" class="inline-block px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Retour à mes équipes</a>
+  </p>
+{% endblock %}

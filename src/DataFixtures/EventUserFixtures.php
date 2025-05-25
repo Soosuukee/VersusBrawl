@@ -7,14 +7,22 @@ use App\Entity\EventUser;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+// use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class EventUserFixtures extends Fixture implements FixtureGroupInterface
+class EventUserFixtures extends Fixture implements DependentFixtureInterface
 {
-    public static function getGroups(): array
+    // public static function getGroups(): array
+    // {
+    //     return ['event_users'];
+    // }
+
+    public function getDependencies(): array
     {
-        return ['event_users'];
+        return [
+            EventFixtures::class,
+            UserFixtures::class,
+        ];
     }
 
     public function load(ObjectManager $manager): void

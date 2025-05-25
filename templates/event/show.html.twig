@@ -19,9 +19,7 @@
       <strong>Jeu :</strong> {{ event.game.name }}
     </p>
     <p>
-      <strong>Mode :</strong> {{ event.category }} / {{ event.mode }}{% if event.format %}
-        / {{ event.format }}
-      {% endif %}
+      <strong>Mode :</strong> {{ event.category }} / {{ event.mode }}{{ event.format ? ' / ' ~ event.format : '' }}
     </p>
     <p>
       <strong>Joueurs requis :</strong> {{ event.requiredPlayers }}
@@ -42,24 +40,33 @@
   <h2 class="text-2xl font-semibold mb-4">Participants</h2>
 
   {% if event.isSolo %}
-    {% if (event.eventUsers|length) > 0 %}
+    {% set validUsers = [] %}
+    {% for eu in event.eventUsers %}
+      {% if eu.isValidated is same as(true) %}
+        {% set validUsers = validUsers|merge([eu]) %}
+      {% endif %}
+    {% endfor %}
+
+    {% if (validUsers|length) > 0 %}
       <ul class="list-disc pl-6 space-y-2">
-        {% for eu in event.eventUsers %}
-          <li>
-            {{ eu.user.username }}
-            {% if eu.isValidated is defined %}
-              – <span class="{{ eu.isValidated ? 'text-green-600' : 'text-red-600' }}">{{ eu.isValidated ? 'Validé' : 'En attente' }}</span>
-            {% endif %}
-          </li>
+        {% for eu in validUsers %}
+          <li>{{ eu.user.username }}</li>
         {% endfor %}
       </ul>
     {% else %}
       <p class="text-gray-600">Aucun joueur inscrit pour le moment.</p>
     {% endif %}
   {% else %}
-    {% if (event.participants|length) > 0 %}
+    {% set validTeams = [] %}
+    {% for p in event.participants %}
+      {% if p.isValidated is same as(true) %}
+        {% set validTeams = validTeams|merge([p]) %}
+      {% endif %}
+    {% endfor %}
+
+    {% if (validTeams|length) > 0 %}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {% for participation in event.participants %}
+        {% for participation in validTeams %}
           {% set team = participation.team %}
           <div class="border p-4 rounded shadow bg-white">
             <h3 class="text-lg font-bold">{{ team.name }}</h3>
@@ -67,8 +74,7 @@
               <img src="{{ asset('images/teams/' ~ team.image) }}" alt="{{ team.name }}" class="w-full max-w-[150px] my-2" />
             {% endif %}
             <p>
-              Validation :
-              <span class="{{ participation.isValidated ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold' }}">{{ participation.isValidated ? 'Validée' : 'En attente' }}</span>
+              Validation : <span class="text-green-600 font-semibold">Validée</span>
             </p>
           </div>
         {% endfor %}
@@ -95,7 +101,6 @@
         {% endif %}
       {% else %}
         <p class="text-green-700 font-semibold mb-2">Vous êtes déjà inscrit à cet événement.</p>
-
         {% if event.isSolo %}
           <a href="{{ path('app_event_unregister_solo', { id: event.id, slug: event.game.slug }) }}" class="inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Me désinscrire (solo)</a>
         {% else %}

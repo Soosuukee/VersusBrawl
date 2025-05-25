@@ -9,19 +9,27 @@ use App\Traits\EntityValidationTrait;
 use App\Traits\GameMetadataTrait;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+// use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Constant\GameModes;
 
-
-class EventFixtures extends Fixture implements FixtureGroupInterface
+class EventFixtures extends Fixture implements DependentFixtureInterface
 {
     use EntityValidationTrait;
     use GameMetadataTrait;
 
-    public static function getGroups(): array
+    // public static function getGroups(): array
+    // {
+    //     return ['events'];
+    // }
+
+    public function getDependencies(): array
     {
-        return ['events'];
+        return [
+            GameFixtures::class,
+            UserFixtures::class,
+        ];
     }
 
     public function __construct(ValidatorInterface $validator)

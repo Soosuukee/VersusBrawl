@@ -6,9 +6,9 @@
   <form method="get" class="mb-6 space-y-4">
     <div>
       <label>Entre :</label>
-      <input type="date" name="start" value="{{ filters.start ?? '' }}" />
+      <input type="date" name="start" value="{{ filters.start|default('') }}" />
       <label>et</label>
-      <input type="date" name="end" value="{{ filters.end ?? '' }}" />
+      <input type="date" name="end" value="{{ filters.end|default('') }}" />
     </div>
 
     <div>
@@ -16,7 +16,7 @@
       <select name="game">
         <option value="">Tous</option>
         {% for g in games %}
-          {% set selected = filters.game ?? '' == g.slug ? 'selected' : '' %}
+          {% set selected = filters.game is defined and filters.game == g.slug ? 'selected' : '' %}
           <option value="{{ g.slug }}" {{ selected }}>{{ g.name }}</option>
         {% endfor %}
       </select>
@@ -24,17 +24,17 @@
 
     <div>
       <label>Mode complet :</label>
-      <input type="text" name="fullMode" value="{{ filters.fullMode ?? '' }}" placeholder="Ex: creative > boxfight > 2v2" />
+      <input type="text" name="fullMode" value="{{ filters.fullMode|default('') }}" placeholder="Ex: creative > boxfight > 2v2" />
     </div>
 
     <div>
       <label>Nom :</label>
-      <input type="text" name="name" value="{{ filters.name ?? '' }}" placeholder="Tournoi Fortnite..." />
+      <input type="text" name="name" value="{{ filters.name|default('') }}" placeholder="Tournoi Fortnite..." />
     </div>
 
     <div>
-      {% set isChecked = filters.upcoming ?? false ? 'checked' : '' %}
-      <label><input type="checkbox" name="upcoming" {{ isChecked }} />Événements à venir seulement</label>
+      {% set checked = filters.upcoming is defined and filters.upcoming ? 'checked' : '' %}
+      <label><input type="checkbox" name="upcoming" {{ checked }} />Événements à venir seulement</label>
     </div>
 
     <div>
@@ -45,21 +45,19 @@
   {% if events is not empty %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for event in events %}
-        {% if event.date >= ('now'|date('Y-m-d')) %}
-          <div class="p-4 border rounded shadow-sm bg-white">
-            {% if event.image %}
-              <img src="{{ asset('images/events/' ~ event.image) }}" alt="{{ event.name }}" class="w-full mb-2" />
-            {% else %}
-              <img src="{{ asset('images/heroes/' ~ event.game.slug ~ '_heroes.png') }}" alt="{{ event.game.name }}" class="w-full mb-2" />
-            {% endif %}
-            <strong>{{ event.name }}</strong><br />
-            {{ event.date|date('d/m/Y') }} – {{ event.game.name }}<br />
-            {{ event.category }} / {{ event.mode }}{% if event.format %}
-              / {{ event.format }}
-            {% endif %}<br />
-            <a href="{{ path('app_event_show', { slug: event.game.slug, id: event.id }) }}" class="text-blue-600 hover:underline">Voir</a>
-          </div>
-        {% endif %}
+        <div class="p-4 border rounded shadow-sm bg-white">
+          {% if event.image %}
+            <img src="{{ asset('images/events/' ~ event.image) }}" alt="{{ event.name }}" class="w-full mb-2" />
+          {% else %}
+            <img src="{{ asset('images/heroes/' ~ event.game.slug ~ '_heroes.png') }}" alt="{{ event.game.name }}" class="w-full mb-2" />
+          {% endif %}
+          <strong>{{ event.name }}</strong><br />
+          {{ event.date|date('d/m/Y') }} – {{ event.game.name }}<br />
+          {{ event.category }} / {{ event.mode }}{% if event.format %}
+            / {{ event.format }}
+          {% endif %}<br />
+          <a href="{{ path('app_event_show', { slug: event.game.slug, id: event.id }) }}" class="text-blue-600 hover:underline">Voir</a>
+        </div>
       {% endfor %}
     </div>
   {% else %}

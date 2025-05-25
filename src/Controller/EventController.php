@@ -22,12 +22,13 @@ final class EventController extends AbstractController
         $end = $request->query->get('end');
         $game = $request->query->get('game');
         $fullMode = $request->query->get('fullMode');
+        $gameName = $request->query->get('name');
 
         $startDate = $start ? new \DateTime($start) : null;
         $endDate = $end ? new \DateTime($end) : null;
 
         $events = $em->getRepository(Event::class)
-            ->findUpcomingFiltered($startDate, $endDate, $game, $fullMode);
+            ->findUpcomingFiltered($startDate, $endDate, $game, $fullMode, $gameName);
 
         $games = $em->getRepository(\App\Entity\Game::class)->findAll();
 
@@ -39,6 +40,7 @@ final class EventController extends AbstractController
                 'end' => $end,
                 'game' => $game,
                 'fullMode' => $fullMode,
+                'name' => $gameName,
             ],
         ]);
     }
@@ -164,5 +166,14 @@ final class EventController extends AbstractController
         }
 
         return $this->redirectToRoute('app_event');
+    }
+    #[Route('/{slug}/{id}/registrations', name: 'app_event_registrations')]
+    public function registrations(Event $event): Response
+    {
+        $this->denyAccessUnlessGranted('EVENT_EDIT', $event);
+
+        return $this->render('event/registrations.html.twig', [
+            'event' => $event,
+        ]);
     }
 }

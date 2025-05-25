@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Mes équipes
+{% endblock %}
+
+{% block body %}
+  <h1 class="text-2xl font-bold mb-6">Mes équipes</h1>
+
+  {% if teams is empty %}
+    <p class="text-gray-600">Vous ne faites partie d’aucune équipe pour le moment.</p>
+  {% else %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for team in teams %}
+        <div class="border p-4 rounded bg-white shadow">
+          <h2 class="text-xl font-semibold"><a href="{{ path('app_team_show', { id: team.id }) }}" class="text-blue-600 hover:underline">{{ team.name }}</a></h2>
+          {% if team.image %}
+            <img src="{{ asset('images/teams/' ~ team.image) }}" alt="{{ team.name }}" class="my-2 max-w-[150px]" />
+          {% endif %}
+          <p class="text-sm text-gray-500">
+            {% if team.getCaptain() == app.user %}
+              Créée par vous
+            {% else %}
+              Vous êtes membre
+            {% endif %}
+          </p>
+          <div class="mt-2 space-x-2">
+            <a href="{{ path('app_team_show', { id: team.id }) }}" class="inline-block bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Voir les détails</a>
+            {% if team.getCaptain() == app.user %}
+              <a href="{{ path('app_team_edit', { id: team.id }) }}" class="inline-block bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Modifier</a>
+              <form method="post" action="{{ path('app_team_delete', { id: team.id }) }}" style="display: inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette équipe ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete-team-' ~ team.id) }}" />
+                <button type="submit" class="inline-block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Supprimer</button>
+              </form>
+            {% else %}
+              <form method="post" action="{{ path('app_team_leave', { id: team.id }) }}" style="display: inline;" onsubmit="return confirm('Voulez-vous vraiment quitter cette équipe ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('leave-team-' ~ team.id) }}" />
+                <button type="submit" class="inline-block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Quitter</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}
