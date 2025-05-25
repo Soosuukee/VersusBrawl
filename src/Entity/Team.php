@@ -22,7 +22,7 @@ class Team
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
-    #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'team')]
+    #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'team', orphanRemoval: true, cascade: ['persist'])]
     private Collection $eventParticipations;
 
     #[ORM\ManyToMany(targetEntity: Phase::class, mappedBy: 'teams')]

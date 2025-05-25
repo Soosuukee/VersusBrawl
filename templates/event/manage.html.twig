@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Gestion des événements
+{% endblock %}
+
+{% block body %}
+  <h1 class="text-3xl font-bold mb-6">Gestion des événements</h1>
+
+  {% if is_granted('EVENT_CREATE') %}
+    <a href="{{ path('app_event_new') }}" class="mb-6 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Créer un événement</a>
+  {% endif %}
+
+  {% if events is empty %}
+    <p class="text-gray-600 mt-4">Aucun événement trouvé.</p>
+  {% else %}
+    <table class="w-full border-collapse mt-4 text-sm">
+      <thead>
+        <tr class="bg-gray-100 text-left">
+          <th class="px-4 py-2">Nom</th>
+          <th class="px-4 py-2">Date</th>
+          <th class="px-4 py-2">Jeu</th>
+          <th class="px-4 py-2">Créateur</th>
+          <th class="px-4 py-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+          <tr class="border-t bg-white hover:bg-gray-50">
+            <td class="px-4 py-2 font-medium">{{ event.name }}</td>
+            <td class="px-4 py-2">{{ event.date|date('d/m/Y') }}</td>
+            <td class="px-4 py-2">{{ event.game.name }}</td>
+            <td class="px-4 py-2">
+              {{ event.createdBy.username }}
+              {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <span class="text-xs text-gray-500">({{ event.createdBy.roles[0]|replace({ ROLE_: '' })|lower|capitalize }})</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-2">
+              <a href="{{ path('app_event_show', { id: event.id, slug: event.game.slug }) }}" class="text-blue-600 hover:underline">Voir</a>
+              {% if is_granted('EVENT_EDIT', event) %}
+                • <a href="{{ path('app_event_edit', { id: event.id, slug: event.game.slug }) }}" class="text-yellow-600 hover:underline">Modifier</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

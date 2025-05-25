@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\EventUser;
+use App\Entity\Event;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,6 +17,19 @@ class EventUserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, EventUser::class);
     }
+
+    public function isUserRegistered(Event $event, User $user): bool
+    {
+        return (bool) $this->createQueryBuilder('eu')
+            ->select('1')
+            ->where('eu.event = :event')
+            ->andWhere('eu.user = :user')
+            ->setParameter('event', $event)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 
     //    /**
     //     * @return EventUser[] Returns an array of EventUser objects

@@ -60,7 +60,7 @@ class Event
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: ScoringRule::class, cascade: ['persist', 'remove'])]
     private Collection $scoringRules;
 
-    #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'event')]
+    #[ORM\OneToMany(targetEntity: EventTeam::class, mappedBy: 'event', orphanRemoval: true, cascade: ['persist'])]
     private Collection $participants;
 
     #[ORM\OneToMany(targetEntity: Phase::class, mappedBy: 'event', orphanRemoval: true)]

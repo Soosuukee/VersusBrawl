@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Modifier l'événement : {{ event.name }}
+{% endblock %}
+
+{% block body %}
+  <h1 class="text-3xl font-bold mb-6">Modifier l'événement</h1>
+
+  {{ form_start(form) }}
+  <div class="space-y-4">{{ form_row(form.name) }}
+    {{ form_row(form.date) }}
+    {{ form_row(form.game) }}
+    {{ form_row(form.mode) }}
+    {{ form_row(form.requiredPlayers) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.image) }}</div>
+
+  <button type="submit" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Enregistrer les modifications</button>
+  {{ form_end(form) }}
+
+  <div class="mt-6 flex items-center space-x-4">
+    <form method="post" action="{{ path('app_event_delete', { id: event.id, slug: event.game.slug }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
+      <input type="hidden" name="_token" value="{{ csrf_token('delete-event-' ~ event.id) }}" />
+      <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Supprimer l'événement</button>
+    </form>
+
+    <a href="{{ path('app_event_show', { id: event.id, slug: event.game.slug }) }}" class="text-gray-600 hover:underline">Annuler</a>
+  </div>
+{% endblock %}

@@ -227,6 +227,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getCaptainTeam(): ?Team
+    {
+        foreach ($this->teamMembers as $tm) {
+            if ($tm->isCaptain()) {
+                return $tm->getTeam();
+            }
+        }
+
+        return null;
+    }
+
     public function getEventUsers(): Collection
     {
         return $this->eventUsers;

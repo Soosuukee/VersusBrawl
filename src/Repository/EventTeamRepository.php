@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\EventTeam;
+use App\Entity\Team;
+use App\Entity\Event;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,6 +17,20 @@ class EventTeamRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, EventTeam::class);
     }
+
+    public function isTeamRegistered(Event $event, Team $team): bool
+    {
+        return (bool) $this->createQueryBuilder('et')
+            ->select('1')
+            ->where('et.event = :event')
+            ->andWhere('et.team = :team')
+            ->setParameter('event', $event)
+            ->setParameter('team', $team)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+
 
     //    /**
     //     * @return EventTeam[] Returns an array of EventTeam objects

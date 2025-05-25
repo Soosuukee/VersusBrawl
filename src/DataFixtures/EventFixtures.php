@@ -6,15 +6,18 @@ use App\Entity\Event;
 use App\Entity\Game;
 use App\Entity\User;
 use App\Traits\EntityValidationTrait;
+use App\Traits\GameMetadataTrait;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Constant\GameModes;
 
+
 class EventFixtures extends Fixture implements FixtureGroupInterface
 {
     use EntityValidationTrait;
+    use GameMetadataTrait;
 
     public static function getGroups(): array
     {
@@ -38,6 +41,18 @@ class EventFixtures extends Fixture implements FixtureGroupInterface
             'valorant' => 'valorant-champions.jpg',
         ];
 
+        $nonSoloGames = [
+            'valorant',
+            'counter-strike-2',
+            'overwatch-2',
+            'league-of-legends',
+            'dota-2',
+            'rocket-league',
+            'fragpunk',
+            'marvel-rivals',
+            'tom-clancy-s-rainbow-six-siege'
+        ];
+
         $usedImageGames = [];
         $allSlugs = GameModes::getAllGameSlugs();
         $startDate = (new \DateTime('2024-05-24'))->getTimestamp();
@@ -54,9 +69,10 @@ class EventFixtures extends Fixture implements FixtureGroupInterface
             $count = 0;
 
             foreach ($paths as $path) {
-                $isSolo = in_array($path['format'], ['1v1']) ||
-                    ($slug === 'teamfight-tactics' && $path['mode'] === 'free_for_all') ||
-                    ($slug === 'pokemon' && in_array($path['mode'], ['smogon_singles', 'vgc_2v2_double_battles']));
+                $isSolo = !$this->isGameAlwaysTeamBased($slug) && (
+                    in_array($path['format'], ['1v1']) ||
+                    in_array($path['mode'], ['free_for_all', 'deathmatch', 'singles', 'vgc_2v2_double_battles', 'duel'])
+                );
 
                 $event = new Event();
                 $event->setName(ucfirst($slug) . ' ' . ucfirst($path['mode']) . ' Event ' . ($count + 1));
@@ -66,10 +82,27 @@ class EventFixtures extends Fixture implements FixtureGroupInterface
                 $event->setMode($path['mode']);
                 $event->setFormat($path['format']);
                 $event->setScoringMode('standard');
-                $event->setDescription('Tournoi ' . $path['mode'] . ' sur ' . ucfirst($slug));
+                $event->setDescription(sprintf('Tournoi %s sur %s', str_replace('_', ' ', $path['mode']), ucfirst(str_replace('-', ' ', $slug))));
                 $event->setDate((new \DateTime())->setTimestamp(rand($startDate, $endDate)));
-                $event->setRequiredPlayers($isSolo ? 1 : rand(2, 10));
                 $event->setIsSolo($isSolo);
+
+                if ($isSolo) {
+                    $event->setRequiredPlayers(1);
+                } elseif ($slug === 'valorant' && $path['mode'] === 'plant_defuse') {
+                    $event->setRequiredPlayers(5);
+                } elseif ($slug === 'counter-strike-2' && $path['mode'] === 'bomb_defusal') {
+                    $event->setRequiredPlayers(5);
+                } elseif ($slug === 'rocket-league' && $path['mode'] === 'standard') {
+                    $event->setRequiredPlayers(3);
+                } elseif ($slug === 'league-of-legends') {
+                    $event->setRequiredPlayers(5);
+                } elseif ($slug === 'overwatch-2') {
+                    $event->setRequiredPlayers(5);
+                } elseif ($slug === 'super-smash-bros' && $path['mode'] === 'doubles') {
+                    $event->setRequiredPlayers(2);
+                } else {
+                    $event->setRequiredPlayers(rand(2, 10));
+                }
 
                 if (!in_array($slug, $usedImageGames) && isset($imageMap[$slug])) {
                     $event->setImage($imageMap[$slug]);
